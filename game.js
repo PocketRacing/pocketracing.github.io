@@ -1,6 +1,6 @@
 /* =========================================
    POCKET RACING — GAME.JS
-   Меню, гараж, баланс и опыт
+   Меню, гараж, баланс, XP и магазин
 ========================================= */
 
 /* =========================================
@@ -9,6 +9,7 @@
 
 let player = {
     money: 1000,
+    gold: 0,
     experience: 0,
     level: 1
 };
@@ -18,6 +19,7 @@ let player = {
 ========================================= */
 
 function hideAllScreens() {
+
     document.querySelectorAll(".screen").forEach(screen => {
         screen.classList.add("hidden");
     });
@@ -27,22 +29,12 @@ function hideAllScreens() {
    ГЛАВНОЕ МЕНЮ
 ========================================= */
 
-function openGarage() {
-    hideAllScreens();
-
-    const garage = document.getElementById("garage");
-
-    if (garage) {
-        garage.classList.remove("hidden");
-    }
-
-    updateGarage();
-}
-
 function backToMenu() {
+
     hideAllScreens();
 
-    const menu = document.getElementById("mainMenu");
+    const menu =
+        document.getElementById("mainMenu");
 
     if (menu) {
         menu.classList.remove("hidden");
@@ -53,13 +45,56 @@ function backToMenu() {
    ГАРАЖ
 ========================================= */
 
+function openGarage() {
+
+    hideAllScreens();
+
+    const garage =
+        document.getElementById("garage");
+
+    if (garage) {
+        garage.classList.remove("hidden");
+    }
+
+    updateGarage();
+}
+
 function updateGarage() {
 
-    const moneyElement = document.getElementById("money");
+    const moneyElement =
+        document.getElementById("money");
+
+    const goldElement =
+        document.getElementById("garageGold");
+
+    const xpElement =
+        document.getElementById("garageXP");
+
+    const levelElement =
+        document.getElementById("playerLevel");
 
     if (moneyElement) {
+
         moneyElement.textContent =
             player.money.toLocaleString("ru-RU");
+    }
+
+    if (goldElement) {
+
+        goldElement.textContent =
+            player.gold.toLocaleString("ru-RU");
+    }
+
+    if (xpElement) {
+
+        xpElement.textContent =
+            player.experience.toLocaleString("ru-RU");
+    }
+
+    if (levelElement) {
+
+        levelElement.textContent =
+            player.level;
     }
 }
 
@@ -71,13 +106,13 @@ function addExperience(amount) {
 
     player.experience += amount;
 
-    /*
-       Каждые 100 XP = новый уровень
-    */
+    while (
+        player.experience >=
+        player.level * 100
+    ) {
 
-    while (player.experience >= player.level * 100) {
-
-        player.experience -= player.level * 100;
+        player.experience -=
+            player.level * 100;
 
         player.level++;
 
@@ -110,6 +145,7 @@ function rewardForWin() {
     const experienceReward = 100;
 
     addMoney(moneyReward);
+
     addExperience(experienceReward);
 
     showGarageMessage(
@@ -125,19 +161,79 @@ function startRace() {
 
     hideAllScreens();
 
-    const race = document.getElementById("race");
+    const race =
+        document.getElementById("race");
 
     if (race) {
         race.classList.remove("hidden");
     }
 
-    /*
-       Сообщаем race.js,
-       что начинается новая гонка
-    */
-
     if (typeof initRace === "function") {
+
         initRace();
+    }
+}
+
+/* =========================================
+   💎 МАГАЗИН
+========================================= */
+
+function openShop() {
+
+    hideAllScreens();
+
+    const shop =
+        document.getElementById("shop");
+
+    if (shop) {
+
+        shop.classList.remove("hidden");
+    }
+
+    updateShop();
+}
+
+/* =========================================
+   ОБНОВЛЕНИЕ МАГАЗИНА
+========================================= */
+
+function updateShop() {
+
+    const goldElement =
+        document.getElementById("gold");
+
+    const shopMoneyElement =
+        document.getElementById("shopMoney");
+
+    if (goldElement) {
+
+        goldElement.textContent =
+            player.gold.toLocaleString("ru-RU");
+    }
+
+    if (shopMoneyElement) {
+
+        shopMoneyElement.textContent =
+            player.money.toLocaleString("ru-RU");
+    }
+
+    updateGarage();/* =========================================
+   ТЕСТОВАЯ ПОКУПКА ЗОЛОТА
+========================================= */
+
+function buyGold(amount) {
+
+    player.gold += amount;
+
+    updateShop();
+
+    const message =
+        document.getElementById("shopMessage");
+
+    if (message) {
+
+        message.textContent =
+            `✅ Тестовая покупка! +${amount} 💎`;
     }
 }
 
@@ -147,9 +243,11 @@ function startRace() {
 
 function showMessage(text) {
 
-    const message = document.getElementById("message");
+    const message =
+        document.getElementById("message");
 
     if (message) {
+
         message.textContent = text;
     }
 }
@@ -160,16 +258,20 @@ function showGarageMessage(text) {
         document.getElementById("garageMessage");
 
     if (message) {
+
         message.textContent = text;
     }
 }
 
 /* =========================================
-   СТАРТ
+   ЗАПУСК
 ========================================= */
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
 
-    updateGarage();
+        updateGarage();
 
-});
+    }
+);}
