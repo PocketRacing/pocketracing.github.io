@@ -12,7 +12,7 @@
 
 <body>
 
-    <!-- АККАУНТ -->
+    <!-- СОЗДАНИЕ АККАУНТА -->
 
     <section id="accountScreen" class="screen">
 
@@ -32,9 +32,13 @@
                 autocomplete="off"
             >
 
-            <button type="button" id="createPlayerButton">
-    🏎️ СОЗДАТЬ ГОНЩИКА
-</button>
+            <button
+                type="button"
+                id="createPlayerButton"
+                onclick="createAccount()">
+                🏎️ СОЗДАТЬ ГОНЩИКА
+            </button>
+
             <p id="accountMessage"></p>
 
         </div>
@@ -119,7 +123,7 @@
 
                 <img
                     src="./car1.png"
-                    alt="Твоя машина"
+                    alt="Dodge Charger Demon"
                 >
 
             </div>
@@ -131,7 +135,7 @@
             </p>
 
             <p>
-                🏆 Уровень
+                🏆 Уровень:
                 <b id="playerLevel">1</b>
             </p>
 
@@ -205,10 +209,10 @@ P:
 
     <!-- ПРОФИЛЬ -->
 
-    <section id="profile" class="screen hidden">
+    <section id="profile" class=screen hidden">
 
         <button
-            class=ton"
+            class="backButton"
             type="button"
             onclick="backToMenu()">
             ← НАЗАД
@@ -358,7 +362,7 @@ P:
             <h2>💎 100 ЗОЛОТА</h2>
 
             <p>
-                Пополни баланс золота
+                Пополнение игрового баланса
             </p>
 
             <div class="donatePrice">
@@ -368,11 +372,11 @@ P:
             <button
                 type="button"
                 onclick="buyGold(100)">
-                💎 ПОЛУЧИТЬ 100 ЗОЛОТА
+                💎 КУПИТЬ 100 ЗОЛОТА
             </button>
 
             <small>
-                Тестовая покупка — реальные деньги пока не списываются
+                Тестовая покупка. Реальная оплата пока не подключена.
             </small>
 
         </div>
@@ -381,9 +385,11 @@ P:
 
     </section>
 
-    <script src="game.js"></script>
-    <script src="race.js?v=2"></script>
+    <!-- СКРИПТЫ -->
+
+    <script src="./game.js"></script>
+    <script src="./race.js?v=2"></script>
 
 </body>
 
-</html>"backBut
+</html>"
