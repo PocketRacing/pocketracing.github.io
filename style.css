@@ -1,4 +1,286 @@
-px rgba(0, 0, 0, 0.9);
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100vh;
+
+    background-image:
+        linear-gradient(
+            rgba(0, 0, 0, 0.45),
+            rgba(0, 0, 0, 0.65)
+        ),
+        url("./background.jpg");
+
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+
+    color: #fff;
+    font-family: Arial, sans-serif;
+
+    overflow-x: hidden;
+}
+
+/* =================================
+   ЭКРАНЫ
+================================= */
+
+.screen {
+    width: min(1100px, 100%);
+    min-height: 100vh;
+
+    margin: 0 auto;
+    padding: 40px 30px;
+
+    text-align: center;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* =================================
+   ЗАГОЛОВОК
+================================= */
+
+h1 {
+    margin: 10px 0;
+
+    font-size: clamp(32px, 6vw, 64px);
+    letter-spacing: 2px;
+
+    text-shadow:
+        0 3px 10px rgba(0, 0, 0, 0.8);
+}
+
+h2 {
+    font-size: clamp(20px, 3vw, 30px);
+
+    text-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.8);
+}
+
+.subtitle {
+    margin: 10px auto 30px;
+
+    font-size: clamp(16px, 2vw, 22px);
+    line-height: 1.5;
+
+    text-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.9);
+}
+
+/* =================================
+   КНОПКИ
+================================= */
+
+.buttons {
+    width: min(420px, 100%);
+
+    margin: 30px auto;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 15px;
+}
+
+button {
+    width: 100%;
+    min-height: 58px;
+
+    padding: 14px 20px;
+
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+
+    background: rgba(25, 25, 25, 0.85);
+
+    color: #fff;
+
+    font-size: 18px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    backdrop-filter: blur(6px);
+
+    transition:
+        transform 0.15s,
+        background 0.15s;
+}
+
+button:hover {
+    background: rgba(55, 55, 55, 0.9);
+
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* =================================
+   СООБЩЕНИЯ
+================================= */
+
+#message,
+#garageMessage,
+#raceMessage {
+    min-height: 25px;
+
+    font-size: 17px;
+
+    text-shadow:
+        0 2px 7px rgba(0, 0, 0, 0.9);
+}
+
+/* =================================
+   КНОПКА НАЗАД
+================================= */
+
+.backButton {
+    width: auto;
+    min-width: 130px;
+
+    margin-bottom: 20px;
+}
+
+/* =================================
+   ГАРАЖ
+================================= */
+
+.car {
+    width: min(650px, 100%);
+
+    margin: 20px auto;
+    padding: 25px;
+
+    border-radius: 20px;
+
+    background: rgba(15, 15, 15, 0.72);
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
+
+    backdrop-filter: blur(8px);
+
+    box-shadow:
+        0 10px 35px rgba(0, 0, 0, 0.45);
+}
+
+.carImage {
+    width: 100%;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+}
+
+.carImage img {
+    display: block;
+
+    width: min(500px, 90%);
+
+    height: auto;
+
+    max-height: 330px;
+
+    object-fit: contain;
+
+    margin: 0 auto;
+}
+
+.stats {
+    width: min(450px, 100%);
+
+    margin: 20px auto;
+
+    text-align: left;
+}
+
+.stats p {
+    margin: 10px 0;
+}
+
+.money {
+    margin: 25px auto;
+
+    font-size: clamp(20px, 3vw, 28px);
+
+    text-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.9);
+}
+
+/* =================================
+   ГОНКА
+================================= */
+
+.raceCars {
+    width: min(1000px, 100%);
+
+    margin: 30px auto;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: clamp(20px, 5vw, 70px);
+}
+
+.raceCar {
+    flex: 1;
+
+    min-width: 0;
+
+    padding: 15px;
+
+    border-radius: 18px;
+
+    background: rgba(10, 10, 10, 0.5);
+
+    backdrop-filter: blur(5px);
+}
+
+.raceCar img {
+    display: block;
+
+    width: min(380px, 100%);
+
+    height: auto;
+
+    max-height: 280px;
+
+    margin: 0 auto;
+
+    object-fit: contain;
+}
+
+.vs {
+    flex: 0 0 auto;
+
+    font-size: clamp(25px, 5vw, 50px);
+
+    font-weight: bold;
+
+    text-shadow:
+        0 3px rgba(0, 0, 0, 0.9);
 }
 
 .raceInfo {
