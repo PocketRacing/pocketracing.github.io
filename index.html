@@ -1,4 +1,66 @@
-<!DOCTYPE html>
+==================
+         💎 МАГАЗИН
+    ================================= -->
+
+    <section id="shop" class="screen hidden">
+
+        <button
+            class="backButton"
+            type="button"
+            onclick="backToMenu()">
+            ← НАЗАД
+        </button>
+
+        <h1>💎 МАГАЗИН</h1>
+
+        <div class="shopBalance">
+
+            <p>
+                💰 Монеты:
+                <b id="shopMoney">1 000</b>
+            </p>
+
+            <p>
+                💎 Золото:
+                <b id="gold">0</b>
+            </p>
+
+        </div>
+
+        <div class="buttons">
+
+            <button type="button" onclick="buyGold(100)">
+                💎 100 золота — 99 ₽
+            </button>
+
+            <button type="button" onclick="buyGold(550)">
+                💎 550 золота — 399 ₽
+            </button>
+
+            <button type="button" onclick="buyGold(1200)">
+                💎 1 200 золота — 799 ₽
+            </button>
+
+            <button type="button" onclick="buyGold(2500)">
+                💎 2 500 золота — 1 499 ₽
+            </button>
+
+        </div>
+
+        <p id="shopMessage"></p>
+
+    </section>
+
+    <!-- ================================
+         JAVASCRIPT
+    ================================= -->
+
+    <script src="game.js"></script>
+    <script src="race.js?v=2"></script>
+
+</body>
+
+</html> ==============<!DOCTYPE html>
 <html lang="ru">
 
 <head>
@@ -21,26 +83,27 @@
         <h1>POCKET RACING</h1>
 
         <p class="subtitle">
-            Уличные гонки<br>
+            Уличные гонки
+
             Твоя машина. Твоя победа.
         </p>
 
         <div class="buttons">
 
             <button type="button" onclick="openGarage()">
-                НАЧАТЬ ИГРУ
+                🏎️ ГАРАЖ
             </button>
 
-            <button
-                type="button"
-                onclick="showMessage('Выбор гонки пока в разработке')">
-                ВЫБОР ГОНКИ
+            <button type="button" onclick="showMessage('Выбор гонки пока в разработке')">
+                🏁 ВЫБОР ГОНКИ
             </button>
 
-            <button
-                type="button"
-                onclick="showMessage('Профиль пока в разработке')">
-                ПРОФИЛЬ
+            <button type="button" onclick="showMessage('Профиль пока в разработке')">
+                👤 ПРОФИЛЬ
+            </button>
+
+            <button type="button" onclick="openShop()">
+                💎 МАГАЗИН
             </button>
 
         </div>
@@ -48,7 +111,6 @@
         <p id="message"></p>
 
     </section>
-
 
     <!-- ================================
          ГАРАЖ
@@ -78,7 +140,7 @@
 
             <h2>Dodge Charger Demon</h2>
 
-            <p>⭐ Уровень 1</p>
+            <p>⭐ Уровень <b id="playerLevel">1</b></p>
 
             <div class="stats">
 
@@ -93,8 +155,22 @@
         </div>
 
         <div class="money">
+
             💰 Монеты:
             <b id="money">1 000</b>
+
+            
+
+    💎 Золото:
+            <b id="garageGold">0</b>
+
+            
+
+ 
+
+   ⭐ XP:
+            <b id="garageXP">0</b>
+
         </div>
 
         <div class="buttons">
@@ -123,7 +199,6 @@
 
     </section>
 
-
     <!-- ================================
          ГОНКА
     ================================= -->
@@ -141,8 +216,6 @@
 
         <div class="raceCars">
 
-            <!-- ИГРОК -->
-
             <div class="raceCar">
 
                 <img
@@ -154,29 +227,15 @@
 
             </div>
 
-
-            <!-- VS -->
-
             <div class="vs">
                 VS
             </div>
-
-
-            <!-- ПОЛИЦИЯ -->
 
             <div class="raceCar">
 
                 <img
                     src="./car2.png"
                     alt="Police"
-                    style="
-                        display: block;
-                        width: min(380px, 100%);
-                        height: auto;
-                        max-height: 280px;
-                        object-fit: contain;
-                        margin: 0 auto;
-                    "
                 >
 
                 <h2>🚓 Police</h2>
@@ -184,11 +243,6 @@
             </div>
 
         </div>
-
-
-        <!-- =============================
-             ИНФОРМАЦИЯ
-        ============================== -->
 
         <div class="raceInfo">
 
@@ -203,11 +257,6 @@
 
         </div>
 
-
-        <!-- =============================
-             КНОПКА АТАКИ
-        ============================== -->
-
         <div class="buttons">
 
             <button
@@ -220,14 +269,4 @@
 
     </section>
 
-
-    <!-- ================================
-         JAVASCRIPT
-    ================================= -->
-
-    <script src="game.js"></script>
-    <script src="race.js?v=2"></script>
-
-</body>
-
-</html>
+    <!--
