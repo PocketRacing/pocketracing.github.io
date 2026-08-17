@@ -12,21 +12,70 @@
 
 <body>
 
-    <!-- ГЛАВНОЕ МЕНЮ -->
+    <!-- АККАУНТ -->
 
-    <section id="mainMenu" class="screen">
+    <section id="accountScreen" class="screen">
 
         <h1>POCKET RACING</h1>
 
         <p class="subtitle">
-            Уличные гонки
-
-            Твоя машина. Твоя победа.
+            Создай своего гонщика
         </p>
+
+        <div class="accountCard">
+
+            <input
+                id="playerNameInput"
+                type="text"
+                maxlength="20"
+                placeholder="Введите имя"
+                autocomplete="off"
+            >
+
+            <button
+                type="button"
+                onclick="createAccount()">
+                🏎️ СОЗДАТЬ ГОНЩИКА
+            </button>
+
+            <p id="accountMessage"></p>
+
+        </div>
+
+    </section>
+
+    <!-- ГЛАВНОЕ МЕНЮ -->
+
+    <section id="mainMenu" class="screen hidden">
+
+        <h1>POCKET RACING</h1>
+
+        <p class="subtitle">
+            Добро пожаловать,
+            <b id="menuPlayerName">Гонщик</b>!
+        </p>
+
+        <div class="balanceBar">
+
+            <span>
+                💰 <b id="menuMoney">1000</b>
+            </span>
+
+            <span>
+                💎 <b id="menuGold">0</b>
+            </span>
+
+            <span>
+                ⭐ <b id="menuXP">0</b>
+            </span>
+
+        </div>
 
         <div class="buttons">
 
-            <button type="button" onclick="openGarage()">
+            <button
+                type="button"
+                onclick="openGarage()">
                 🏎️ ГАРАЖ
             </button>
 
@@ -38,11 +87,13 @@
 
             <button
                 type="button"
-                onclick="showMessage('Профиль пока в разработке')">
+                onclick="openProfile()">
                 👤 ПРОФИЛЬ
             </button>
 
-            <button type="button" onclick="openShop()">
+            <button
+                type="button"
+                onclick="openShop()">
                 💎 МАГАЗИН
             </button>
 
@@ -71,7 +122,7 @@
 
                 <img
                     src="./car1.png"
-                    alt="Dodge Charger Demon"
+                    alt="Твоя машина"
                 >
 
             </div>
@@ -79,7 +130,11 @@
             <h2>Dodge Charger Demon</h2>
 
             <p>
-                ⭐ Уровень
+                👤 <b id="garagePlayerName">Гонщик</b>
+            </p>
+
+            <p>
+                🏆 Уровень
                 <b id="playerLevel">1</b>
             </p>
 
@@ -107,18 +162,20 @@
         <div class="money">
 
             💰 Монеты:
-            <b id="money">1 000</b>
+            <b id="money">1000</b>
 
             
 
-    💎 Золото:
+      
+
+Золото:
             <b id="garageGold">0</b>
 
             
 
- 
+       
 
-   ⭐ XP:
+P:
             <b id="garageXP">0</b>
 
         </div>
@@ -149,6 +206,59 @@
 
     </section>
 
+    <!-- ПРОФИЛЬ -->
+
+    <section id="profile" class="screen hidden">
+
+        <button
+            class=ton"
+            type="button"
+            onclick="backToMenu()">
+            ← НАЗАД
+        </button>
+
+        <h1>👤 ПРОФИЛЬ</h1>
+
+        <div class="profileCard">
+
+            <h2 id="profileName">
+                Гонщик
+            </h2>
+
+            <p>
+                🏆 Уровень:
+                <b id="profileLevel">1</b>
+            </p>
+
+            <p>
+                ⭐ XP:
+                <b id="profileXP">0</b>
+            </p>
+
+            <p>
+                💰 Монеты:
+                <b id="profileMoney">1000</b>
+            </p>
+
+            <p>
+                💎 Золото:
+                <b id="profileGold">0</b>
+            </p>
+
+        </div>
+
+        <div class="buttons">
+
+            <button
+                type="button"
+                onclick="resetAccount()">
+                ⚠️ СБРОСИТЬ АККАУНТ
+            </button>
+
+        </div>
+
+    </section>
+
     <!-- ГОНКА -->
 
     <section id="race" class="screen hidden">
@@ -168,10 +278,12 @@
 
                 <img
                     src="./car1.png"
-                    alt="Dodge Charger Demon"
+                    alt="Твоя машина"
                 >
 
-                <h2>Dodge Charger Demon</h2>
+                <h2 id="racePlayerName">
+                    Гонщик
+                </h2>
 
             </div>
 
@@ -213,7 +325,7 @@
                 🔥 АТАКОВАТЬ
             </button>
 
-        <iv>
+        </div>
 
     </section>
 
@@ -234,7 +346,7 @@
 
             <p>
                 💰 Монеты:
-                <b id="shopMoney">1 000</b>
+                <b id="shopMoney">1000</b>
             </p>
 
             <p>
@@ -244,31 +356,27 @@
 
         </div>
 
-        <div class="buttons">
+        <div class="donateCard">
+
+            <h2>💎 100 ЗОЛОТА</h2>
+
+            <p>
+                Пополни баланс золота
+            </p>
+
+            <div class="donatePrice">
+                99 ₽
+            </div>
 
             <button
                 type="button"
                 onclick="buyGold(100)">
-                💎 100 золота — 99 ₽
+                💎 ПОЛУЧИТЬ 100 ЗОЛОТА
             </button>
 
-            <button
-                type="button"
-                onclick="buyGold(550)">
-                💎 550 золота — 399 ₽
-            </button>
-
-            <button
-                type="button"
-                onclick="buyGold(1200)">
-                💎 1 200 золота — 799 ₽
-            </button>
-
-            <button
-                type="button"
-                onclick="buyGold(2500)">
-                💎 2 500 золота — 1 499 ₽
-            </button>
+            <small>
+                Тестовая покупка — реальные деньги пока не списываются
+            </small>
 
         </div>
 
@@ -276,11 +384,9 @@
 
     </section>
 
-    <!-- JAVASCRIPT -->
-
     <script src="game.js"></script>
     <script src="race.js?v=2"></script>
 
 </body>
 
-</html>/d
+</html>"backBut
