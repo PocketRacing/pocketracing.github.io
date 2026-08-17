@@ -21,9 +21,8 @@ body {
         url("./background.jpg");
 
     background-size: cover;
-    background-position: center center;
+    background-position: center;
     background-repeat: no-repeat;
-    background-attachment: scroll;
 
     background-color: #222;
 
@@ -34,9 +33,7 @@ body {
     overflow-x: hidden;
 }
 
-/* =================================
-   ЭКРАНЫ
-================================= */
+/* ЭКРАНЫ */
 
 .screen {
     width: min(1100px, 100%);
@@ -52,9 +49,7 @@ body {
     display: none !important;
 }
 
-/* =================================
-   ЗАГОЛОВКИ
-================================= */
+/* ЗАГОЛОВКИ */
 
 h1 {
     margin: 10px 0;
@@ -83,9 +78,7 @@ h2 {
         0 2px 8px rgba(0, 0, 0, 0.9);
 }
 
-/* =================================
-   КНОПКИ
-================================= */
+/* КНОПКИ */
 
 .buttons {
     width: min(420px, 100%);
@@ -133,30 +126,73 @@ button:active {
     transform: scale(0.98);
 }
 
-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+/* АККАУНТ */
+
+.accountCard {
+    width: min(430px, 100%);
+
+    margin: 40px auto;
+
+    padding: 25px;
+
+    border-radius: 20px;
+
+    background: rgba(10, 10, 10, 0.72);
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
+
+    backdrop-filter: blur(8px);
 }
 
-/* =================================
-   СООБЩЕНИЯ
-================================= */
+.accountCard input {
+    width: 100%;
 
-#message,
-#garageMessage,
-#raceMessage,
-#shopMessage {
-    min-height: 25px;
+    min-height: 58px;
 
-    font-size: 17px;
+    margin-bottom: 15px;
 
-    text-shadow:
-        0 2px 7px rgba(0, 0, 0, 0.9);
+    padding: 15px;
+
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+
+    background: rgba(255, 255, 255, 0.1);
+
+    color: #fff;
+
+    font-size: 18px;
+
+    outline: none;
 }
 
-/* =================================
-   НАЗАД
-================================= */
+.accountCard input::placeholder {
+    color: rgba(255, 255, 255, 0.65);
+}
+
+/* БАЛАНС */
+
+.balanceBar {
+    width: min(650px, 100%);
+
+    margin: 20px auto;
+
+    padding: 15px;
+
+    display: flex;
+
+    justify-content: center;
+    gap: 25px;
+
+    border-radius: 16px;
+
+    background: rgba(10, 10, 10, 0.7);
+
+    backdrop-filter: blur(8px);
+
+    font-size: 18px;
+}
+
+/* НАЗАД */
 
 .backButton {
     width: auto;
@@ -165,9 +201,7 @@ button:disabled {
     margin-bottom: 20px;
 }
 
-/* =================================
-   ГАРАЖ
-================================= */
+/* ГАРАЖ */
 
 .car {
     width: min(650px, 100%);
@@ -201,9 +235,9 @@ button:disabled {
 
     width: min(500px, 90%);
 
-    height: auto;
-
     max-height: 330px;
+
+    height: auto;
 
     object-fit: contain;
 
@@ -231,9 +265,27 @@ button:disabled {
         0 2px 8px rgba(0, 0, 0, 0.9);
 }
 
-/* =================================
-   ГОНКА
-================================= */
+/* ПРОФИЛЬ */
+
+.profileCard {
+    width: min(500px, 100%);
+
+    margin: 30px auto;
+
+    padding: 25px;
+
+    border-radius: 20px;
+
+    background: rgba(10, 10, 10, 0.72);
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
+
+    backdrop-filter: blur(8px);
+
+    font-size: 20px;
+}
+
+/* ГОНКА */
 
 .raceCars {
     width: min(1000px, 100%);
@@ -246,9 +298,7 @@ button:disabled {
     justify-content: center;
 
     gap: clamp(20px, 5vw, 70px);
-}
-
-.raceCar {
+}aceCar {
     flex: 1;
 
     min-width: 0;
@@ -267,9 +317,9 @@ button:disabled {
 
     width: min(380px, 100%);
 
-    height: auto;
-
     max-height: 280px;
+
+    height: auto;
 
     margin: 0 auto;
 
@@ -281,24 +331,16 @@ button:disabled {
 
     font-size: clamp(25px, 5vw, 50px);
 
-    font-weight:d;
-
-    text-shadow:
-        0 3px 10px rgba(0, 0, 0, 0.9);
+    font-weight: bold;
 }
 
 .raceInfo {
     margin: 30px auto;
 
     font-size: clamp(18px, 2.5vw, 25px);
-
-    text-shadow:
-        0 2px 8px rgba(0, 0, 0, 0.9);
 }
 
-/* =================================
-   💎 МАГАЗИН
-================================= */
+/* МАГАЗИН */
 
 .shopBalance {
     width: min(450px, 100%);
@@ -315,35 +357,64 @@ button:disabled {
 
     backdrop-filter: blur(8px);
 
-    box-shadow:
-        0 10px 30px rgba(0, 0, 0, 0.4);
-
     font-size: 21px;
 }
 
-.shopBalance p {
-    margin: 10px 0;
+.donateCard {
+    width: min(500px, 100%);
+
+    margin: 30px auto;
+
+    padding: 30px 25px;
+
+    border-radius: 22px;
+
+    background: rgba(10, 10, 10, 0.78);
+
+    border: 1px solid rgba(255, 255, 255, 0.15);
+
+    backdrop-filter: blur(10px);
+
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.5);
 }
 
-#shopMessage {
-    min-height: 35px;
+.donateCard h2 {
+    margin-top: 0;
+}
 
-    margin-top: 20px;
+.donatePrice {
+    margin: 20px 0;
 
-    font-size: 18px;
+    font-size: 34px;
 
     font-weight: bold;
 }
 
-/* =================================
-   МОБИЛЬНЫЙ ТЕЛЕФОН
-================================= */
+.donateCard small {
+    display: block;
+
+    margin-top: 15px;
+
+    opacity: 0.65;
+
+    line-height: 1.4;
+}
+
+#message,
+#garageMessage,
+#shopMessage,
+#accountMessage {
+    min-height: 25px;
+
+    font-size: 17px;
+}
+
+/* ТЕЛЕФОН */
 
 max-width: 600px {
 
     .screen {
-        width: 100%;
-
         padding: 25px 16px;
     }
 
@@ -351,16 +422,16 @@ max-width: 600px {
         font-size: 36px;
     }
 
-    .subtitle {
-        font-size: 17px;
+    .balanceBar {
+        flex-wrap: wrap;
 
-        margin-bottom: 25px;
+        gap: 12px;
+
+        font-size: 16px;
     }
 
     .buttons {
         width: 100%;
-
-        margin: 25px auto;
 
         gap: 12px;
     }
@@ -381,16 +452,10 @@ max-width: 600px {
         max-height: 240px;
     }
 
-    .stats {
-        font-size: 16px;
-    }
-
     .raceCars {
         flex-direction: column;
 
         gap: 10px;
-
-        margin-top: 20px;
     }
 
     .raceCar {
@@ -407,24 +472,12 @@ max-width: 600px {
         font-size: 28px;
     }
 
-    .raceInfo {
-        margin: 20px auto;
-    }
-
-    #attackButton {
-        min-height: 68px;
-
-        font-size: 20px;
-    }
-
     .shopBalance {
         font-size: 18px;
     }
 }
 
-/* =================================
-   МАЛЕНЬКИЕ ТЕЛЕФОНЫ
-================================= */
+/* МАЛЕНЬКИЕ ТЕЛЕФОНЫ */
 
 max-width: 380px {
 
@@ -445,36 +498,4 @@ max-width: 380px {
     .raceCar img {
         max-height: 160px;
     }
-}
-
-/* =================================
-   НОУТБУК / ПК
-================================= */
-
-min-width: 601px {
-
-    .screen {
-        padding-top: 60px;
-
-        padding-bottom: 60px;
-    }
-
-    .buttons {
-        width: 420px;
-    }
-}
-
-/* =================================
-   БОЛЬШОЙ МОНИТОР
-================================= */
-
-min-width: 1400px {
-
-    .screen {
-        width: min(1200px, 100%);
-    }
-
-    .raceCars {
-        width: 1100px;
-    }
-} bol
+}.r
