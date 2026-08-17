@@ -1,66 +1,4 @@
-<!-- ================================
-         Магазин
-    ================================= -->
-
-    <section id="shop" class="screen hidden">
-
-        <button
-            class="backButton"
-            type="button"
-            onclick="backToMenu()">
-            ← НАЗАД
-        </button>
-
-        <h1>💎 МАГАЗИН</h1>
-
-        <div class="shopBalance">
-
-            <p>
-                💰 Монеты:
-                <b id="shopMoney">1 000</b>
-            </p>
-
-            <p>
-                💎 Золото:
-                <b id="gold">0</b>
-            </p>
-
-        </div>
-
-        <div class="buttons">
-
-            <button type="button" onclick="buyGold(100)">
-                💎 100 золота — 99 ₽
-            </button>
-
-            <button type="button" onclick="buyGold(550)">
-                💎 550 золота — 399 ₽
-            </button>
-
-            <button type="button" onclick="buyGold(1200)">
-                💎 1 200 золота — 799 ₽
-            </button>
-
-            <button type="button" onclick="buyGold(2500)">
-                💎 2 500 золота — 1 499 ₽
-            </button>
-
-        </div>
-
-        <p id="shopMessage"></p>
-
-    </section>
-
-    <!-- ================================
-         JAVASCRIPT
-    ================================= -->
-
-    <script src="game.js"></script>
-    <script src="race.js?v=2"></script>
-
-</body>
-
-</html> ==============<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ru">
 
 <head>
@@ -74,9 +12,7 @@
 
 <body>
 
-    <!-- ================================
-         ГЛАВНОЕ МЕНЮ
-    ================================= -->
+    <!-- ГЛАВНОЕ МЕНЮ -->
 
     <section id="mainMenu" class="screen">
 
@@ -94,11 +30,15 @@
                 🏎️ ГАРАЖ
             </button>
 
-            <button type="button" onclick="showMessage('Выбор гонки пока в разработке')">
+            <button
+                type="button"
+                onclick="showMessage('Выбор гонки пока в разработке')">
                 🏁 ВЫБОР ГОНКИ
             </button>
 
-            <button type="button" onclick="showMessage('Профиль пока в разработке')">
+            <button
+                type="button"
+                onclick="showMessage('Профиль пока в разработке')">
                 👤 ПРОФИЛЬ
             </button>
 
@@ -112,9 +52,7 @@
 
     </section>
 
-    <!-- ================================
-         ГАРАЖ
-    ================================= -->
+    <!-- ГАРАЖ -->
 
     <section id="garage" class="screen hidden">
 
@@ -140,15 +78,27 @@
 
             <h2>Dodge Charger Demon</h2>
 
-            <p>⭐ Уровень <b id="playerLevel">1</b></p>
+            <p>
+                ⭐ Уровень
+                <b id="playerLevel">1</b>
+            </p>
 
             <div class="stats">
 
-                <p>⚡ Мощность: <b>98</b></p>
+                <p>
+                    ⚡ Мощность:
+                    <b>98</b>
+                </p>
 
-                <p>🏁 Скорость: <b>94</b></p>
+                <p>
+                    🏁 Скорость:
+                    <b>94</b>
+                </p>
 
-                <p>🎮 Управление: <b>76</b></p>
+                <p>
+                    🎮 Управление:
+                    <b>76</b>
+                </p>
 
             </div>
 
@@ -199,9 +149,7 @@
 
     </section>
 
-    <!-- ================================
-         ГОНКА
-    ================================= -->
+    <!-- ГОНКА -->
 
     <section id="race" class="screen hidden">
 
@@ -265,8 +213,74 @@
                 🔥 АТАКОВАТЬ
             </button>
 
-        </div>
+        <iv>
 
     </section>
 
-    <!--
+    <!-- МАГАЗИН -->
+
+    <section id="shop" class="screen hidden">
+
+        <button
+            class="backButton"
+            type="button"
+            onclick="backToMenu()">
+            ← НАЗАД
+        </button>
+
+        <h1>💎 МАГАЗИН</h1>
+
+        <div class="shopBalance">
+
+            <p>
+                💰 Монеты:
+                <b id="shopMoney">1 000</b>
+            </p>
+
+            <p>
+                💎 Золото:
+                <b id="gold">0</b>
+            </p>
+
+        </div>
+
+        <div class="buttons">
+
+            <button
+                type="button"
+                onclick="buyGold(100)">
+                💎 100 золота — 99 ₽
+            </button>
+
+            <button
+                type="button"
+                onclick="buyGold(550)">
+                💎 550 золота — 399 ₽
+            </button>
+
+            <button
+                type="button"
+                onclick="buyGold(1200)">
+                💎 1 200 золота — 799 ₽
+            </button>
+
+            <button
+                type="button"
+                onclick="buyGold(2500)">
+                💎 2 500 золота — 1 499 ₽
+            </button>
+
+        </div>
+
+        <p id="shopMessage"></p>
+
+    </section>
+
+    <!-- JAVASCRIPT -->
+
+    <script src="game.js"></script>
+    <script src="race.js?v=2"></script>
+
+</body>
+
+</html>/d
