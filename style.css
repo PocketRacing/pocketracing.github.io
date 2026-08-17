@@ -1,0 +1,242 @@
+/* ========================================
+   ОСНОВА
+======================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+
+    background: #000;
+    color: #fff;
+
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+/* ========================================
+   ЭКРАНЫ
+======================================== */
+
+.screen {
+    min-height: 100vh;
+
+    padding: 30px 20px;
+
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+    align-items: center;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* ========================================
+   ГЛАВНОЕ МЕНЮ
+======================================== */
+
+.logo {
+    font-size: 60px;
+}
+
+h1 {
+    margin: 10px 0;
+
+    font-size: 42px;
+}
+
+.subtitle {
+    color: #aaa;
+
+    margin-top: 0;
+    margin-bottom: 30px;
+}
+
+/* ========================================
+   КНОПКИ
+======================================== */
+
+.buttons {
+    width: 100%;
+    max-width: 320px;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 12px;
+}
+
+button {
+    width: 100%;
+
+    padding: 15px;
+
+    background: #151515;
+    color: white;
+
+    border: 1px solid #333;
+    border-radius: 10px;
+
+    font-size: 16px;
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+button:hover {
+    background: #252525;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+/* ========================================
+   ГАРАЖ
+======================================== */
+
+.car {
+    width: 100%;
+    max-width: 450px;
+
+    padding: 20px;
+
+    background: #101010;
+
+    border-radius: 15px;
+}
+
+.carImage img {
+    width: 100%;
+    max-width: 400px;
+
+    height: auto;
+
+    object-fit: contain;
+}
+
+.car h2 {
+    font-size: 24px;
+}
+
+/* ========================================
+   ХАРАКТЕРИСТИКИ
+======================================== */
+
+.stats {
+    text-align: left;
+}
+
+.stats p {
+    margin: 10px 0;
+}
+
+/* ========================================
+   МОНЕТЫ
+======================================== */
+
+.money {
+    margin: 20px 0;
+
+    font-size: 18px;
+}
+
+/* ========================================
+   НАЗАД
+======================================== */
+
+.backButton {
+    width: auto;
+
+    align-self: flex-start;
+
+    margin-bottom: 20px;
+}
+
+/* ========================================
+   ГОНКА
+======================================== */
+
+.raceCars {
+    width: 100%;
+    max-width: 600px;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    gap: 15px;
+}
+
+.raceCar {
+    width: 40%;
+}
+
+.raceCar img {
+    width: 100%;
+    max-width: 220px;
+
+    height: 140px;
+
+    object-fit: contain;
+}
+
+.raceCar h2 {
+    font-size: 16px;
+}
+
+.vs {
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.raceInfo {
+    margin: 20px 0;
+
+    padding: 15px;
+
+    background: #101010;
+
+    border-radius: 12px;
+}
+
+/* ========================================
+   СООБЩЕНИЯ
+======================================== */
+
+#message,
+#garageMessage,
+#raceMessage {
+    margin-top: 15px;
+}
+
+/* ========================================
+   ТЕЛЕФОН
+======================================== */
+
+max-width: 600px {
+
+    h1 {
+        font-size: 34px;
+    }
+
+    .raceCars {
+        gap: 5px;
+    }
+
+    .raceCar img {
+        height: 100px;
+    }
+
+    .raceCar h2 {
+        font-size: 13px;
+    }
+
+}
