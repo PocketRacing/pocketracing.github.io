@@ -1,107 +1,175 @@
-// ========================================
-// 🎮 GAME.JS — ОСНОВА ИГРЫ
-// ========================================
+/* =========================================
+   POCKET RACING — GAME.JS
+   Меню, гараж, баланс и опыт
+========================================= */
 
-// ========================================
-// 1. СКРЫТЬ ВСЕ ЭКРАНЫ
-// ========================================
+/* =========================================
+   ДАННЫЕ ИГРОКА
+========================================= */
+
+let player = {
+    money: 1000,
+    experience: 0,
+    level: 1
+};
+
+/* =========================================
+   ЭКРАНЫ
+========================================= */
 
 function hideAllScreens() {
-
-    document.querySelectorAll(".screen").forEach(function(screen) {
-
+    document.querySelectorAll(".screen").forEach(screen => {
         screen.classList.add("hidden");
-
     });
-
 }
 
-// ========================================
-// 2. ГЛАВНОЕ МЕНЮ → ГАРАЖ
-// ========================================
+/* =========================================
+   ГЛАВНОЕ МЕНЮ
+========================================= */
 
 function openGarage() {
-
     hideAllScreens();
 
-    document.getElementById("garage").classList.remove("hidden");
+    const garage = document.getElementById("garage");
 
+    if (garage) {
+        garage.classList.remove("hidden");
+    }
+
+    updateGarage();
 }
-
-// ========================================
-// 3. ГАРАЖ → ГЛАВНОЕ МЕНЮ
-// ========================================
 
 function backToMenu() {
-
     hideAllScreens();
 
-    document.getElementById("mainMenu").classList.remove("hidden");
+    const menu = document.getElementById("mainMenu");
 
+    if (menu) {
+        menu.classList.remove("hidden");
+    }
 }
 
-// ========================================
-// 4. ГАРАЖ → ГОНКА
-// ========================================
+/* =========================================
+   ГАРАЖ
+========================================= */
+
+function updateGarage() {
+
+    const moneyElement = document.getElementById("money");
+
+    if (moneyElement) {
+        moneyElement.textContent =
+            player.money.toLocaleString("ru-RU");
+    }
+}
+
+/* =========================================
+   ОПЫТ
+========================================= */
+
+function addExperience(amount) {
+
+    player.experience += amount;
+
+    /*
+       Каждые 100 XP = новый уровень
+    */
+
+    while (player.experience >= player.level * 100) {
+
+        player.experience -= player.level * 100;
+
+        player.level++;
+
+        showGarageMessage(
+            `⭐ Новый уровень: ${player.level}!`
+        );
+    }
+
+    updateGarage();
+}
+
+/* =========================================
+   ДЕНЬГИ
+========================================= */
+
+function addMoney(amount) {
+
+    player.money += amount;
+
+    updateGarage();
+}
+
+/* =========================================
+   НАГРАДА ЗА ПОБЕДУ
+========================================= */
+
+function rewardForWin() {
+
+    const moneyReward = 500;
+    const experienceReward = 100;
+
+    addMoney(moneyReward);
+    addExperience(experienceReward);
+
+    showGarageMessage(
+        `🏆 Победа! +${moneyReward} 💰 и +${experienceReward} ⭐`
+    );
+}
+
+/* =========================================
+   ГОНКА
+========================================= */
 
 function startRace() {
 
     hideAllScreens();
 
-    document.getElementById("race").classList.remove("hidden");
+    const race = document.getElementById("race");
 
+    if (race) {
+        race.classList.remove("hidden");
+    }
+
+    /*
+       Сообщаем race.js,
+       что начинается новая гонка
+    */
+
+    if (typeof initRace === "function") {
+        initRace();
+    }
 }
 
-// ========================================
-// 5. СООБЩЕНИЯ
-// ========================================
+/* =========================================
+   СООБЩЕНИЯ
+========================================= */
 
 function showMessage(text) {
 
     const message = document.getElementById("message");
 
     if (message) {
-
         message.textContent = text;
-
     }
-
 }
-
-// ========================================
-// 6. СООБЩЕНИЯ ГАРАЖА
-// ========================================
 
 function showGarageMessage(text) {
 
-    const message = document.getElementById("garageMessage");
+    const message =
+        document.getElementById("garageMessage");
 
     if (message) {
-
         message.textContent = text;
-
     }
-
 }
 
-// ========================================
-// 7. СООБЩЕНИЯ ГОНКИ
-// ========================================
+/* =========================================
+   СТАРТ
+========================================= */
 
-function showRaceMessage(text) {
+document.addEventListener("DOMContentLoaded", () => {
 
-    const message = document.getElementById("raceMessage");
+    updateGarage();
 
-    if (message) {
-
-        message.textContent = text;
-
-    }
-
-}
-
-// ========================================
-// 8. СТАРТ
-// ========================================
-
-console.log("🎮 GAME.JS загружен");
+});
