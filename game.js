@@ -36,46 +36,64 @@ function loadPlayer() {
     const savedPlayer =
         localStorage.getItem("pocketRacingPlayer");
 
-    if (savedPlayer) {
+    if (!savedPlayer) {
+        return false;
+    }
 
-        try {
+    try {
 
-            player = JSON.parse(savedPlayer);
+        const data =
+            JSON.parse(savedPlayer);
 
-        } catch (error) {
+        player = {
+            name: data.name || "",
+            money: Number.isFinite(data.money)
+                ? data.money
+                : 1000,
+            gold: Number.isFinite(data.gold)
+                ? data.gold
+                : 0,
+            experience: Number.isFinite(data.experience)
+                ? data.experience
+                : 0,
+            level: Number.isFinite(data.level)
+                ? data.level
+                : 1
+        };
 
-            console.log(
-                "Ошибка загрузки аккаунта"
-            );
-        }
+        return true;
+
+    } catch (error) {
+
+        console.error(
+            "Ошибка загрузки игрока:",
+            error
+        );
+
+        return false;
     }
 }
 
 /* =========================================
-   ПРОВЕРКА АККАУНТА
+   ПОКАЗ ЭКРАНА
 ========================================= */
 
-function checkAccount() {
+function showScreen(screenId) {
 
-    const accountScreen =
-        document.getElementById("accountScreen");
+    document.querySelectorAll(".screen").forEach(
+        function(screen) {
 
-    const savedPlayer =
-        localStorage.getItem("pocketRacingPlayer");
+            screen.classList.add("hidden");
 
-    if (savedPlayer) {
+        }
+    );
 
-        loadPlayer();
+    const screen =
+        document.getElementById(screenId);
 
-        accountScreen.classList.add("hidden");
+    if (screen) {
 
-        updateAll();
-
-    } else {
-
-        accountScreen.classList.remove("hidden");
-
-        hideAllScreensExcept("accountScreen");
+        screen.classList.remove("hidden");
     }
 }
 
@@ -91,13 +109,26 @@ function createAccount() {
     const message =
         document.getElementById("accountMessage");
 
+    if (!input) {
+
+        console.error(
+            "Не найден playerNameInput"
+        );
+
+        return;
+    }
+
     const name =
         input.value.trim();
 
     if (name.length < 2) {
 
-        message.textContent =
-            "⚠️ Введи имя минимум из 2 символов.";
+        if (message) {
+
+            message.textContent =
+                "⚠️ Введи имя минимум из 2 символов.";
+
+        }
 
         return;
     }
@@ -120,34 +151,28 @@ function createAccount() {
 
     updateAll();
 
-    openMainMenu();
+    showScreen("mainMenu");
 }
 
 /* =========================================
-   ЭКРАНЫ
+   ПРОВЕРКА АККАУНТА
 ========================================= */
 
-function hideAllScreens() {
+function checkAccount() {
 
-    document.querySelectorAll(".screen")
-        .forEach(screen => {
+    const hasAccount =
+        loadPlayer();
 
-            screen.classList.add("hidden");
+    if (hasAccount && player.name) {
 
-        });
-}
+        updateAll();
 
-function hideAllScreensExcept(id) {
+        showScreen("mainMenu");
 
-    document.querySelectorAll(".screen")
-        .forEach(screen => {
+    } else {
 
-            if (screen.id !== id) {
-
-                screen.classList.add("hidden");
-            }
-
-        });
+        showScreen("accountScreen");
+    }
 }
 
 /* =========================================
@@ -156,15 +181,7 @@ function hideAllScreensExcept(id) {
 
 function openMainMenu() {
 
-    hideAllScreens();
-
-    const menu =
-        document.getElementById("mainMenu");
-
-    if (menu) {
-
-        menu.classList.remove("hidden");
-    }
+    showScreen("mainMenu");
 
     updateAll();
 }
@@ -180,17 +197,9 @@ function backToMenu() {
 
 function openGarage() {
 
-    hideAllScreens();
+    showScreen("garage");
 
-    const garage =
-        document.getElementById("garage");
-
-    if (garage) {
-
-        garage.classList.remove("hidden");
-    }
-
-    updateAll();
+    updateGarage();
 }
 
 function updateGarage() {
@@ -222,9 +231,7 @@ function updateGarage() {
             player.gold.toLocaleString("ru-RU");
     }
 
-    if (xp) {
-
-        xp.textContent =
+    if (xp) {xp.textContent =
             player.experience.toLocaleString("ru-RU");
     }
 
@@ -236,7 +243,8 @@ function updateGarage() {
 
     if (name) {
 
-        name.textContentplayer.name;
+        name.textContent =
+            player.name;
     }
 }
 
@@ -246,15 +254,7 @@ function updateGarage() {
 
 function openProfile() {
 
-    hideAllScreens();
-
-    const profile =
-        document.getElementById("profile");
-
-    if (profile) {
-
-        profile.classList.remove("hidden");
-    }
+    showScreen("profile");
 
     updateProfile();
 }
@@ -291,7 +291,7 @@ function updateProfile() {
     if (xp) {
 
         xp.textContent =
-            player.experience;
+            player.experience.toLocaleString("ru-RU");
     }
 
     if (money) {
@@ -308,204 +308,8 @@ function updateProfile() {
 }
 
 /* =========================================
-   XP
+   ГЛАВНОЕ МЕНЮ — ДАННЫЕ
 ========================================= */
-
-function addExperience(amount) {
-
-    player.experience += amount;
-
-    while (
-        player.experience >=
-        player.level * 100
-    ) {
-
-        player.experience -=
-            player.level * 100;
-
-        player.level++;
-
-        showGarageMessage(
-            `⭐ Новый уровень: ${player.level}!`
-        );
-    }
-
-    savePlayer();
-
-    updateAll();
-}
-
-/* =========================================
-   МОНЕТЫ
-========================================= */
-
-function addMoney(amount) {
-
-    player.money += amount;
-
-    savePlayer();
-
-    updateAll();
-}
-
-/* =========================================
-   НАГРАДА
-========================================= */
-
-function rewardForWin() {
-
-    const moneyReward = 500;
-    const xpReward = 100;
-
-    player.money += moneyReward;
-
-    addExperience(xpReward);
-
-    savePlayer();
-
-    updateAll();
-
-    showGarageMessage(
-        `🏆 Победа! +${moneyReward} 💰 и +${xpReward} ⭐`
-    );
-}
-
-/* =========================================
-   ГОНКА
-========================================= */
-
-function startRace() {
-
-    hideAllScreens();
-
-    const race =
-        document.getElementById("race");
-
-    if (race) {
-
-        race.classList.remove("hidden");
-    }
-
-    const raceName =
-        document.getElementById("racePlayerName");
-
-    if (raceName) {
-
-        raceName.textContent =
-            player.name;
-    }
-
-    if (typeof initRace === "function") {
-
-        initRace();
-    }
-}
-
-/* =========================================
-   💎 МАГАЗИН
-========================================= */
-
-function openShop() {
-
-    hideAllScreens();
-
-    const shop =
-        document.getElementById("shop");
-
-    if (shop) {
-
-        shop.classList.remove("hidden");
-    }
-
-    updateShop();
-}
-
-function updateShop() {
-
-    const money =
-        document.getElementById("shopMoney");
-
-    const gold =
-        document.getElementById("gold");
-
-    if (money) {
-
-        money.textContent =
-            player.money.toLocaleString("ru-RU");
-    }
-
-    if (gold) {
-
-        gold.textContent =
-            player.gold.toLocaleString("ru-RU");
-    }
-}
-
-/* =========================================
-   ТЕСТОВЫЙ ДОНАТ
-========================================= */
-
-function buyGold(amount) {
-
-    player.gold += amount;
-
-    savePlayer();
-
-    updateAll();
-
-    const message =
-        document.getElementById("shopMessage");
-
-    if (message) {
-
-        message.textContent =
-            `✅ Тестовая покупка! +${amount} 💎`;
-
-    }
-}
-
-/* =========================================
-   СООБЩЕНИЯ
-========================================= */
-
-function showMessage(text) {
-
-    const message =
-        document.getElementById("message");
-
-    if (message) {
-
-        message.textContent =
-            text;
-    }
-}
-
-function showGarageMessage(text) {
-
-    const message =
-        document.getElementById("garageMessage");
-
-    if (message) {
-
-        message.textContent =
-            text;
-    }
-}
-
-/* =========================================
-   ОБНОВЛЕНИЕ ВСЕГО
-========================================= */
-
-function updateAll() {
-
-    updateMenu();
-
-    updateGarage();
-
-    updateProfile();
-
-    updateShop();
-}
 
 function updateMenu() {
 
@@ -547,17 +351,255 @@ function updateMenu() {
 }
 
 /* =========================================
+   МАГАЗИН
+========================================= */
+
+function openShop() {
+
+    showScreen("shop");
+
+    updateShop();
+}
+
+function updateShop() {
+
+    const money =
+        document.getElementById("shopMoney");
+
+    const gold =
+        document.getElementById("gold");
+
+    if (money) {
+
+        money.textContent =
+            player.money.toLocaleString("ru-RU");
+    }
+
+    if (gold) {
+
+        gold.textContent =
+            player.gold.toLocaleString("ru-RU");
+    }
+}
+
+/* =========================================
+   ТЕСТОВАЯ ПОКУПКА
+========================================= */
+
+function buyGold(amount) {
+
+    amount =
+        Number(amount);
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+
+        return;
+    }
+
+    /*
+       ПОКА ЭТО ТЕСТ.
+       РЕАЛЬНАЯ ОПЛАТА БУДЕТ ПОДКЛЮЧЕНА ПОЗЖЕ.
+    */
+
+    player.gold += amount;
+
+    savePlayer();
+
+    updateAll();
+
+    const message =
+        document.getElementById("shopMessage");
+
+    if (message) {
+
+        message.textContent =
+            "✅ Получено +" +
+            amount +
+            " 💎";
+    }
+}
+
+/* =========================================
+   МОНЕТЫ
+========================================= */
+
+function addMoney(amount) {
+
+    amount =
+        Number(amount);
+
+    if (!Number.isFinite(amount)) {
+
+        return;
+    }
+
+    player.money += amount;
+
+    savePlayer();
+
+    updateAll();
+}
+
+/* =========================================
+   XP И УРОВНИ
+========================================= */
+
+function addExperience(amount) {
+
+    amount =
+        Number(amount);
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+
+        return;
+    }
+
+    player.experience += amount;
+
+    while (
+        player.experience >=
+        player.level * 100
+    ) {
+
+        player.experience -=
+            player.level * 100;
+
+        player.level++;
+
+        showGarageMessage(
+            "⭐ Новый уровень: " +
+            player.level +
+            "!"
+        );
+    }
+
+    savePlayer();
+
+    updateAll();
+}
+
+/* =========================================НАГРАДА ЗА ПОБЕДУ
+========================================= */
+
+function rewardForWin() {
+
+    const moneyReward =
+        500;
+
+    const xpReward =
+        100;
+
+    player.money +=
+        moneyReward;
+
+    player.experience +=
+        xpReward;
+
+    while (
+        player.experience >=
+        player.level * 100
+    ) {
+
+        player.experience -=
+            player.level * 100;
+
+        player.level++;
+    }
+
+    savePlayer();
+
+    updateAll();
+
+    showGarageMessage(
+        "🏆 Победа! +" +
+        moneyReward +
+        " 💰 и +" +
+        xpReward +
+        " ⭐"
+    );
+}
+
+/* =========================================
+   ГОНКА
+========================================= */
+
+function startRace() {
+
+    showScreen("race");
+
+    const raceName =
+        document.getElementById("racePlayerName");
+
+    if (raceName) {
+
+        raceName.textContent =
+            player.name;
+    }
+
+    if (
+        typeof initRace ===
+        "function"
+    ) {
+
+        initRace();
+    }
+}
+
+/* =========================================
+   СООБЩЕНИЯ
+========================================= */
+
+function showMessage(text) {
+
+    const message =
+        document.getElementById("message");
+
+    if (message) {
+
+        message.textContent =
+            text;
+    }
+}
+
+function showGarageMessage(text) {
+
+    const message =
+        document.getElementById("garageMessage");
+
+    if (message) {
+
+        message.textContent =
+            text;
+    }
+}
+
+/* =========================================
+   ОБНОВЛЕНИЕ ВСЕХ ЭКРАНОВ
+========================================= */
+
+function updateAll() {
+
+    updateMenu();
+
+    updateGarage();
+
+    updateProfile();
+
+    updateShop();
+}
+
+/* =========================================
    СБРОС АККАУНТА
 ========================================= */
 
 function resetAccount() {
 
-    const confirmReset =
+    const answer =
         confirm(
             "Точно удалить аккаунт и весь прогресс?"
         );
 
-    if (!confirmReset) {
+    if (!answer) {
 
         return;
     }
@@ -570,14 +612,39 @@ function resetAccount() {
 }
 
 /* =========================================
-   ЗАПУСК
+   ЗАПУСК ИГРЫ
 ========================================= */
 
 document.addEventListener(
     "DOMContentLoaded",
-    () => {
+    function() {
+
+        /*
+           Кнопка создаётся напрямую через JS,
+           поэтому она работает даже если
+           onclick в HTML не сработал.
+        */
+
+        const createButton =
+            document.getElementById(
+                "createPlayerButton"
+            );
+
+        if (createButton) {
+
+            createButton.addEventListener(
+                "click",
+                createAccount
+            );
+        }
+
+        /*
+           Если в HTML используется
+           onclick="createAccount()",
+           функция createAccount тоже доступна.
+        */
 
         checkAccount();
 
     }
-); =
+);
