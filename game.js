@@ -1,6 +1,6 @@
 /* =========================================
-   POCKET RACING — GAME.JS
-   Меню, гараж, баланс, XP и магазин
+   POCKET RACING
+   АККАУНТ + СОХРАНЕНИЕ + БАЛАНС + МАГАЗИН
 ========================================= */
 
 /* =========================================
@@ -8,6 +8,7 @@
 ========================================= */
 
 let player = {
+    name: "",
     money: 1000,
     gold: 0,
     experience: 0,
@@ -15,21 +16,145 @@ let player = {
 };
 
 /* =========================================
+   СОХРАНЕНИЕ
+========================================= */
+
+function savePlayer() {
+
+    localStorage.setItem(
+        "pocketRacingPlayer",
+        JSON.stringify(player)
+    );
+}
+
+/* =========================================
+   ЗАГРУЗКА
+========================================= */
+
+function loadPlayer() {
+
+    const savedPlayer =
+        localStorage.getItem("pocketRacingPlayer");
+
+    if (savedPlayer) {
+
+        try {
+
+            player = JSON.parse(savedPlayer);
+
+        } catch (error) {
+
+            console.log(
+                "Ошибка загрузки аккаунта"
+            );
+        }
+    }
+}
+
+/* =========================================
+   ПРОВЕРКА АККАУНТА
+========================================= */
+
+function checkAccount() {
+
+    const accountScreen =
+        document.getElementById("accountScreen");
+
+    const savedPlayer =
+        localStorage.getItem("pocketRacingPlayer");
+
+    if (savedPlayer) {
+
+        loadPlayer();
+
+        accountScreen.classList.add("hidden");
+
+        updateAll();
+
+    } else {
+
+        accountScreen.classList.remove("hidden");
+
+        hideAllScreensExcept("accountScreen");
+    }
+}
+
+/* =========================================
+   СОЗДАНИЕ АККАУНТА
+========================================= */
+
+function createAccount() {
+
+    const input =
+        document.getElementById("playerNameInput");
+
+    const message =
+        document.getElementById("accountMessage");
+
+    const name =
+        input.value.trim();
+
+    if (name.length < 2) {
+
+        message.textContent =
+            "⚠️ Введи имя минимум из 2 символов.";
+
+        return;
+    }
+
+    player = {
+
+        name: name,
+
+        money: 1000,
+
+        gold: 0,
+
+        experience: 0,
+
+        level: 1
+
+    };
+
+    savePlayer();
+
+    updateAll();
+
+    openMainMenu();
+}
+
+/* =========================================
    ЭКРАНЫ
 ========================================= */
 
 function hideAllScreens() {
 
-    document.querySelectorAll(".screen").forEach(screen => {
-        screen.classList.add("hidden");
-    });
+    document.querySelectorAll(".screen")
+        .forEach(screen => {
+
+            screen.classList.add("hidden");
+
+        });
+}
+
+function hideAllScreensExcept(id) {
+
+    document.querySelectorAll(".screen")
+        .forEach(screen => {
+
+            if (screen.id !== id) {
+
+                screen.classList.add("hidden");
+            }
+
+        });
 }
 
 /* =========================================
    ГЛАВНОЕ МЕНЮ
 ========================================= */
 
-function backToMenu() {
+function openMainMenu() {
 
     hideAllScreens();
 
@@ -37,8 +162,16 @@ function backToMenu() {
         document.getElementById("mainMenu");
 
     if (menu) {
+
         menu.classList.remove("hidden");
     }
+
+    updateAll();
+}
+
+function backToMenu() {
+
+    openMainMenu();
 }
 
 /* =========================================
@@ -53,53 +186,129 @@ function openGarage() {
         document.getElementById("garage");
 
     if (garage) {
+
         garage.classList.remove("hidden");
     }
 
-    updateGarage();
+    updateAll();
 }
 
 function updateGarage() {
 
-    const moneyElement =
+    const money =
         document.getElementById("money");
 
-    const goldElement =
+    const gold =
         document.getElementById("garageGold");
 
-    const xpElement =
+    const xp =
         document.getElementById("garageXP");
 
-    const levelElement =
+    const level =
         document.getElementById("playerLevel");
 
-    if (moneyElement) {
+    const name =
+        document.getElementById("garagePlayerName");
 
-        moneyElement.textContent =
+    if (money) {
+
+        money.textContent =
             player.money.toLocaleString("ru-RU");
     }
 
-    if (goldElement) {
+    if (gold) {
 
-        goldElement.textContent =
+        gold.textContent =
             player.gold.toLocaleString("ru-RU");
     }
 
-    if (xpElement) {
+    if (xp) {
 
-        xpElement.textContent =
+        xp.textContent =
             player.experience.toLocaleString("ru-RU");
     }
 
-    if (levelElement) {
+    if (level) {
 
-        levelElement.textContent =
+        level.textContent =
             player.level;
+    }
+
+    if (name) {
+
+        name.textContentplayer.name;
     }
 }
 
 /* =========================================
-   ОПЫТ
+   ПРОФИЛЬ
+========================================= */
+
+function openProfile() {
+
+    hideAllScreens();
+
+    const profile =
+        document.getElementById("profile");
+
+    if (profile) {
+
+        profile.classList.remove("hidden");
+    }
+
+    updateProfile();
+}
+
+function updateProfile() {
+
+    const name =
+        document.getElementById("profileName");
+
+    const level =
+        document.getElementById("profileLevel");
+
+    const xp =
+        document.getElementById("profileXP");
+
+    const money =
+        document.getElementById("profileMoney");
+
+    const gold =
+        document.getElementById("profileGold");
+
+    if (name) {
+
+        name.textContent =
+            player.name;
+    }
+
+    if (level) {
+
+        level.textContent =
+            player.level;
+    }
+
+    if (xp) {
+
+        xp.textContent =
+            player.experience;
+    }
+
+    if (money) {
+
+        money.textContent =
+            player.money.toLocaleString("ru-RU");
+    }
+
+    if (gold) {
+
+        gold.textContent =
+            player.gold.toLocaleString("ru-RU");
+    }
+}
+
+/* =========================================
+   XP
 ========================================= */
 
 function addExperience(amount) {
@@ -121,35 +330,43 @@ function addExperience(amount) {
         );
     }
 
-    updateGarage();
+    savePlayer();
+
+    updateAll();
 }
 
 /* =========================================
-   ДЕНЬГИ
+   МОНЕТЫ
 ========================================= */
 
 function addMoney(amount) {
 
     player.money += amount;
 
-    updateGarage();
+    savePlayer();
+
+    updateAll();
 }
 
 /* =========================================
-   НАГРАДА ЗА ПОБЕДУ
+   НАГРАДА
 ========================================= */
 
 function rewardForWin() {
 
     const moneyReward = 500;
-    const experienceReward = 100;
+    const xpReward = 100;
 
-    addMoney(moneyReward);
+    player.money += moneyReward;
 
-    addExperience(experienceReward);
+    addExperience(xpReward);
+
+    savePlayer();
+
+    updateAll();
 
     showGarageMessage(
-        `🏆 Победа! +${moneyReward} 💰 и +${experienceReward} ⭐`
+        `🏆 Победа! +${moneyReward} 💰 и +${xpReward} ⭐`
     );
 }
 
@@ -165,7 +382,17 @@ function startRace() {
         document.getElementById("race");
 
     if (race) {
+
         race.classList.remove("hidden");
+    }
+
+    const raceName =
+        document.getElementById("racePlayerName");
+
+    if (raceName) {
+
+        raceName.textContent =
+            player.name;
     }
 
     if (typeof initRace === "function") {
@@ -193,39 +420,38 @@ function openShop() {
     updateShop();
 }
 
-/* =========================================
-   ОБНОВЛЕНИЕ МАГАЗИНА
-========================================= */
-
 function updateShop() {
 
-    const goldElement =
-        document.getElementById("gold");
-
-    const shopMoneyElement =
+    const money =
         document.getElementById("shopMoney");
 
-    if (goldElement) {
+    const gold =
+        document.getElementById("gold");
 
-        goldElement.textContent =
-            player.gold.toLocaleString("ru-RU");
-    }
+    if (money) {
 
-    if (shopMoneyElement) {
-
-        shopMoneyElement.textContent =
+        money.textContent =
             player.money.toLocaleString("ru-RU");
     }
 
-    updateGarage();/* =========================================
-   ТЕСТОВАЯ ПОКУПКА ЗОЛОТА
+    if (gold) {
+
+        gold.textContent =
+            player.gold.toLocaleString("ru-RU");
+    }
+}
+
+/* =========================================
+   ТЕСТОВЫЙ ДОНАТ
 ========================================= */
 
 function buyGold(amount) {
 
     player.gold += amount;
 
-    updateShop();
+    savePlayer();
+
+    updateAll();
 
     const message =
         document.getElementById("shopMessage");
@@ -234,6 +460,7 @@ function buyGold(amount) {
 
         message.textContent =
             `✅ Тестовая покупка! +${amount} 💎`;
+
     }
 }
 
@@ -248,7 +475,8 @@ function showMessage(text) {
 
     if (message) {
 
-        message.textContent = text;
+        message.textContent =
+            text;
     }
 }
 
@@ -259,8 +487,86 @@ function showGarageMessage(text) {
 
     if (message) {
 
-        message.textContent = text;
+        message.textContent =
+            text;
     }
+}
+
+/* =========================================
+   ОБНОВЛЕНИЕ ВСЕГО
+========================================= */
+
+function updateAll() {
+
+    updateMenu();
+
+    updateGarage();
+
+    updateProfile();
+
+    updateShop();
+}
+
+function updateMenu() {
+
+    const name =
+        document.getElementById("menuPlayerName");
+
+    const money =
+        document.getElementById("menuMoney");
+
+    const gold =
+        document.getElementById("menuGold");
+
+    const xp =
+        document.getElementById("menuXP");
+
+    if (name) {
+
+        name.textContent =
+            player.name;
+    }
+
+    if (money) {
+
+        money.textContent =
+            player.money.toLocaleString("ru-RU");
+    }
+
+    if (gold) {
+
+        gold.textContent =
+            player.gold.toLocaleString("ru-RU");
+    }
+
+    if (xp) {
+
+        xp.textContent =
+            player.experience.toLocaleString("ru-RU");
+    }
+}
+
+/* =========================================
+   СБРОС АККАУНТА
+========================================= */
+
+function resetAccount() {
+
+    const confirmReset =
+        confirm(
+            "Точно удалить аккаунт и весь прогресс?"
+        );
+
+    if (!confirmReset) {
+
+        return;
+    }
+
+    localStorage.removeItem(
+        "pocketRacingPlayer"
+    );
+
+    location.reload();
 }
 
 /* =========================================
@@ -271,7 +577,7 @@ document.addEventListener(
     "DOMContentLoaded",
     () => {
 
-        updateGarage();
+        checkAccount();
 
     }
-);}
+); =
