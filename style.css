@@ -25,7 +25,10 @@ body {
     background-repeat: no-repeat;
     background-attachment: scroll;
 
+    background-color: #222;
+
     color: #fff;
+
     font-family: Arial, sans-serif;
 
     overflow-x: hidden;
@@ -50,7 +53,7 @@ body {
 }
 
 /* =================================
-   ЗАГОЛОВОК
+   ЗАГОЛОВКИ
 ================================= */
 
 h1 {
@@ -60,14 +63,14 @@ h1 {
     letter-spacing: 2px;
 
     text-shadow:
-        0 3px 10px rgba(0, 0, 0, 0.8);
+        0 3px 10px rgba(0, 0, 0, 0.9);
 }
 
 h2 {
     font-size: clamp(20px, 3vw, 30px);
 
     text-shadow:
-        0 2px 8px rgba(0, 0, 0, 0.8);
+        0 2px 8px rgba(0, 0, 0, 0.9);
 }
 
 .subtitle {
@@ -104,7 +107,7 @@ button {
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 12px;
 
-    background: rgba(25, 25, 25, 0.85);
+    background: rgba(20, 20, 20, 0.86);
 
     color: #fff;
 
@@ -113,7 +116,7 @@ button {
 
     cursor: pointer;
 
-    backdrop-filter: blur(6px);
+    backdrop-filter: blur(7px);
 
     transition:
         transform 0.15s,
@@ -141,7 +144,8 @@ button:disabled {
 
 #message,
 #garageMessage,
-#raceMessage {
+#raceMessage,
+#shopMessage {
     min-height: 25px;
 
     font-size: 17px;
@@ -151,7 +155,7 @@ button:disabled {
 }
 
 /* =================================
-   КНОПКА НАЗАД
+   НАЗАД
 ================================= */
 
 .backButton {
@@ -277,10 +281,10 @@ button:disabled {
 
     font-size: clamp(25px, 5vw, 50px);
 
-    font-weight: bold;
+    font-weight:d;
 
     text-shadow:
-        0 3px rgba(0, 0, 0, 0.9);
+        0 3px 10px rgba(0, 0, 0, 0.9);
 }
 
 .raceInfo {
@@ -290,6 +294,45 @@ button:disabled {
 
     text-shadow:
         0 2px 8px rgba(0, 0, 0, 0.9);
+}
+
+/* =================================
+   💎 МАГАЗИН
+================================= */
+
+.shopBalance {
+    width: min(450px, 100%);
+
+    margin: 20px auto 30px;
+
+    padding: 20px;
+
+    border-radius: 18px;
+
+    background: rgba(10, 10, 10, 0.7);
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
+
+    backdrop-filter: blur(8px);
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.4);
+
+    font-size: 21px;
+}
+
+.shopBalance p {
+    margin: 10px 0;
+}
+
+#shopMessage {
+    min-height: 35px;
+
+    margin-top: 20px;
+
+    font-size: 18px;
+
+    font-weight: bold;
 }
 
 /* =================================
@@ -373,6 +416,10 @@ max-width: 600px {
 
         font-size: 20px;
     }
+
+    .shopBalance {
+        font-size: 18px;
+    }
 }
 
 /* =================================
@@ -430,4 +477,4 @@ min-width: 1400px {
     .raceCars {
         width: 1100px;
     }
-} 10
+} bol
