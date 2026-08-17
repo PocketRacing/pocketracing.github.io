@@ -1,166 +1,211 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Гонки</title>
+
+    <title>Pocket Racing</title>
+
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<h1>POCKET RACING</h1>
+    <!-- ================================
+         🏠 ГЛАВНОЕ МЕНЮ
+    ================================= -->
 
-<p class="subtitle">
-    Уличные гонки
+    <section id="mainMenu" class="screen">
 
-    Твоя машина. Твоя победа.
-</p>
+        <h1>POCKET RACING</h1>
 
-    <div class="buttons">
-        <button onclick="openGarage()">НАЧАТЬ ИГРУ</button>
-        <button onclick="showMessage('Выбор гонки пока в разработке')">
-            ВЫБОР ГОНКИ
-        </button>
-        <button onclick="showMessage('Профиль пока в разработке')">
-            ПРОФИЛЬ
-        </button>
-    </div>
+        <p class="subtitle">
+            Уличные гонки<
+            Твоя машина. Твоя победа.
+        </p>
 
-    <p id="message"></p>
-</section>
+        <div class="buttons">
 
-<section id="garage" class="screen hidden">
+            <button type="button" onclick="openGarage()">
+                НАЧАТЬ ИГРУ
+            </button>
 
-    <button class="backButton" onclick="backToMenu()">
-        ← НАЗАД
-    </button>
+            <button type="button" onclick="showMessage('Выбор гонки пока в разработке')">
+                ВЫБОР ГОНКИ
+            </button>
 
-    <h1>🏎️ ГАРАЖ</h1>
+            <button type="button" onclick="showMessage('Профиль пока в разработке')">
+                ПРОФИЛЬ
+            </button>
 
-    <div class="car">
-
-        <div class="carImage">
-            <img src="images/car1.png" alt="Dodge Charger Demon">
         </div>
 
-        <h2>Dodge Charger Demon</h2>
+        <p id="message"></p>
 
-        <p>⭐ Уровень 1</p>
+    </section>
 
-        <div class="stats">
-            <p>⚡ Мощность: <b>98</b></p>
-            <p>🏁 Скорость: <b>94</b></p>
-            <p>🎮 Управление: <b>76</b></p>
-        </div>
+    <!-- ================================
+         🏎️ ГАРАЖ
+    ================================= -->
 
-    </div>
+    <section id="garage" class="screen hidden">
 
-    <div class="playerStats">
-
-    <div class="money">
-        💰 Монеты: <b id="money">1000</b>
-    </div>
-
-    <div class="level">
-        🏆 Уровень: <b id="level">1</b>
-    </div>
-
-    <div class="experience">
-        ⭐ Опыт:
-        <b id="experience">0</b> /
-        <b id="nextLevel">50</b>
-    </div>
-
-</div>
-
-    <div class="buttons">
-
-        <button onclick="startRace()">
-            🏁 В ГОНКУ
+        <button
+            class="backButton"
+            type="button"
+            onclick="backToMenu()">
+            ← НАЗАД
         </button>
 
-        <button onclick="showGarageMessage('Тюнинг пока в разработке')">
-            🔧 ТЮНИНГ
-        </button>
+        <h1>🏎️ ГАРАЖ</h1>
 
-        <button onclick="showGarageMessage('Коллекция пока в разработке')">
-            📦 КОЛЛЕКЦИЯ
-        </button>
+        <div class="car">
 
-    </div>
+            <div class="carImage">
 
-    <p id="garageMessage"></p>
+                <img
+                    src="car1.png"
+                    alt="Dodge Charger Demon"
+                >
 
-</section>
-
-<section id="race" class="screen hidden">
-
-    <button class="backButton" onclick="openGarage()">
-        ← ГАРАЖ
-    </button>
-
-    <h1>🏁 ГОНКА</h1>
-
-    <div class="raceCars">
-
-        <div class="raceCar">
-
-            <img
-                src="images/car1.png"
-                alt="Dodge Charger Demon"
-            >
+            </div>
 
             <h2>Dodge Charger Demon</h2>
 
+            <p>⭐ Уровень 1</p>
+
+            <div class="stats">
+
+                <p>
+                    ⚡ Мощность: <b>98</b>
+                </p>
+
+                <p>
+                    🏁 Скорость: <b>94</b>
+                </p>
+
+                <p>
+                    🎮 Управление: <b>76</b>
+                </p>
+
+            </div>
+
         </div>
 
-        <div class="vs">
-            VS
+        <div class="money">
+            💰 Монеты: <b id="money">1 000</b>
         </div>
 
-        <div class="raceCar">
+        <div class="buttons">
 
-            <img
-                src="images/car2.png"
-                alt="Police"
-            >
+            <button
+                type="button"
+                onclick="startRace()">
+                🏁 В ГОНКУ
+            </button>
 
-            <h2>🚓 Police</h2>
+            <button
+                type="button"
+                onclick="showGarageMessage('Тюнинг пока в разработке')">
+                🔧 ТЮНИНГ
+            </button>
+
+            <button
+                type="button"
+                onclick="showGarageMessage('Коллекция пока в разработке')">
+                📦 КОЛЛЕКЦИЯ
+            </button>
 
         </div>
 
-    </div>
+        <p id="garageMessage"></p>
 
-    <div class="raceInfo">
+    </section>
 
-        <p>
-            🏆 Счёт:
-            <b id="raceScore">0 : 0</b>
-        </p>
+    <!-- ================================
+         🏁 ГОНКА
+    ================================= -->
 
-        <p id="raceMessage">
-            Готов к гонке?
-        </p>
-
-    </div>
-
-    <div class="buttons">
+    <section id="race" class="screen hidden">
 
         <button
-    id="attackButton"
-    type="button"
-    onclick="attack()"
->
-    🔥 АТАКОВАТЬ
-</button>
+            class="backButton"
+            type="button"
+            onclick="openGarage()">
+            ← ГАРАЖ
+        </button>
 
-    </div>
+        <h1>🏁 ГОНКА</h1>
 
-</section>
+        <div class="raceCars">
 
-<script src="game.js"></script>
-<script src="race.js"></script>
+            <div class="raceCar">
+
+                <img
+                    src="car1.png"
+                    alt="Dodge Charger Demon"
+                >
+
+                <h2>Dodge Charger Demon</h2>
+
+            </div>
+
+            <div class="vs">
+                VS
+            </div>
+
+            <div class="raceCar">
+
+                <img
+                    src="car2.png"
+                    alt="Police"
+                >
+
+                <h2>🚓 Police</h2>
+
+            </div>
+
+        </div>
+
+        <!-- =============================
+             ИНФОРМАЦИЯ ГОНКИ
+        ============================== -->
+
+        <div class="raceInfo">
+
+            <p>
+                🏆 Счёт:
+                <b id="raceScore">0 : 0</b>
+            </p>
+
+            <p id="raceMessage">
+                Готов к гонке?
+            </p>
+
+        </div>
+
+        <!-- =============================
+             УПРАВЛЕНИЕ
+        ============================== -->
+
+        <div class="buttons">
+
+            <button
+                id="attackButton"
+                type="button">
+                🔥 АТАКОВАТЬ
+            <</div>
+
+    </section>
+
+    <!-- ================================
+         JAVASCRIPT
+    ================================= -->
+
+    <script src="game.js"></script>
+    <script src="race.js?v=2"></script>
 
 </body>
-</html>
+
+</html>/button>
