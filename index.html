@@ -2,300 +2,152 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Гонки: Big Boss (Real Save)</title>
-    <style>
-        body { 
-            font-family: 'Segoe UI', sans-serif; 
-            margin: 0; padding: 0; height: 100vh; overflow: hidden;
-            background: radial-gradient(circle at center, #1e1e2e 0%, #2a2a3e 50%, #111 100%);
-            color: white; display: flex; justify-content: center; align-items: center;
-        }
-        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.65); z-index: 1; pointer-events: none; }
-        .container {
-            position: relative; z-index: 2; text-align: center; width: 360px;
-            padding: 30px; background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(15px); border-radius: 20px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);
-        }
-        h1 { color: #00d2d3; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; text-shadow: 0 0 15px rgba(0, 210, 211, 0.5); }
-        input { width: 100%; padding: 15px; font-size: 18px; border-radius: 12px; border: none; outline: none; background: rgba(255,255,255,0.95); color: #333; margin-bottom: 10px; }
-        button {
-            width: 100%; padding: 16px; font-size: 18px; cursor: pointer;
-            background: linear-gradient(45deg, #ff4757, #ff6b81); color: white;
-            border: none; border-radius: 12px; font-weight: bold;
-            box-shadow: 0 8px 20px rgba(255, 71, 87, 0.4); transition: all 0.2s;
-        }
-        button:hover { transform: scale(1.02); box-shadow: 0 12px 25px rgba(255, 71, 87, 0.6); }
-        button:active { transform: scale(0.98); }
-        #accountMessage { margin-top: 15px; min-height: 24px; font-weight: bold; }
-        
-        .stats-panel {
-            margin-top: 25px; text-align: left; background: rgba(0, 0, 0, 0.5);
-            padding: 20px; border-radius: 15px; border: 1px solid rgba(0, 210, 211, 0.3);
-        }
-        .stat-row { margin: 8px 0; font-size: 17px; display: flex; justify-content: space-between; }
-        .money-val { color: #00d2d3; font-weight: bold; font-size: 1.2em; }
-        .gold-val { color: gold; font-weight: bold; font-size: 1.2em; }
-
-        .screen { display: none; animation: fadeIn 0.5s ease; }
-        #loginScreen { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-        #raceScreen {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); z-index: 999; flex-direction: column;
-            justify-content: center; align-items: center;
-        }
-        .race-track {
-            width: 80%; height: 400px; border: 4px solid #555; background: #222;
-            position: relative; overflow: hidden; margin-bottom: 20px;
-        }
-        .car {
-            position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
-            width: 60px; height: 80px; background: red;
-            clip-path: polygon(0 20%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%);
-            box-shadow: 0 0 10px white;
-        }
-        
-        .race-controls { margin-top: 20px; display: flex; gap: 15px; }
-        .race-btn {
-            padding: 15px 30px; font-size: 18px; background: #00d2d3;
-            color: black; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;
-        }
-        .race-status { font-size: 24px; font-weight: bold; margin-top: 10px; min-height: 30px; }
-        
-        /* Стили для лоадера */
-        .loader { border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top: 3px solid #00d2d3; width: 20px; height: 20px; animation: spin 1s linear infinite; margin: 10px auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    </style>
-</head>
-<body>
-    <div class="overlay"></div>
-    <div class="container">
-        <!-- ЭКРАН ВХОДА -->
-        <div id="loginScreen" class="screen">
-            <h1>Гараж</h1>
-            <p style="color: #aaa;">Введи имя гонщика:</p>
-            <input type="text" id="playerNameInput" placeholder="Имя" value="Big Boss">
-            <button onclick="createAccount()" id="loginBtn">Войти в гараж</button>
-            <div id="accountMessage"></div>
-        </div>
-
-        <!-- ГЛАВНОЕ МЕНЮ -->
-        <div id="mainMenu" class="screen">
-            <h1 id="playerTitle">Профиль</h1>
-            <div class="stats-panel">
-                <div class="stat-row"><span>Имя:</span> <span id="statName">--</span></div>
-                <div class="stat-row"><span>Деньги:</span> <span class="money-val" id="statMoney">0</span></div>
-                <div class="stat-row"><span>Золото:</span> <span class="gold-val" id="statGold">0</span></div>
-                <div class="stat-row"><span>Уровень:</span> <span id="statLevel">1</span></div>
-            </div>
-            <button id="raceBtn" onclick="startRace()">СТАРТ ГОНКИ</button>
-        </div>
-    </div>
-
-    <!-- ЭКРАН ГОНКИ -->
-    <div id="raceScreen" class="screen">
-        <h1 style="color: #00d2d3;">ГОНКА!</h1>
-        <p style="color: #aaa; margin-bottom: 20px;">Доедь до финиша!</p>
-        <div class="race-track">
-            <div id="carElement" class="car"></div>
-        </div>
-        <div class="race-status" id="raceStatus">Старт...</div>
-        <div class="race-controls">
-            <button class="race-btn" onclick="cancelRace()">Отмена</button>
-        </div>
-    </div>
-
+    <title>Гараж: Вход</title>
     <!-- Подключаем библиотеку Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
-    <script>
-        // --- НАСТРОЙКИ (ВСТАВЬ СВОЙ КЛЮЧ НИЖЕ) ---
-        const SUPABASE_URL = "https://qyjvkiusyiylckaujjiv.supabase.co";
-        // ⚠️ ВСТАВЬ СЮДА СВОЙ НОВЫЙ КЛЮЧ: sb_publishable_...
-        const SUPABASE_KEY = "sb_publishable_dwxrSiVkIY5C8PKu--_UlA_phF5hvRy"; 
-        
-        let supabase = null;
-        let player = null;
-
-        // Инициализация клиента
-        if (SUPABASE_KEY && SUPABASE_KEY !== "sb_publishable_...") {
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            console.log("✅ Supabase клиент создан");
-        } else {
-            alert("❌ Ошибка: Не вставлен API ключ! Вставь его в код.");
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a1a;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
         }
+        .container {
+            text-align: center;
+            background: #2d2d2d;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            max-width: 400px;
+        }
+        input {
+            padding: 12px;
+            width: 80%;
+            margin-bottom: 15px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            outline: none;
+        }
+        button {
+            padding: 12px 24px;
+            background-color: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #e84118;
+        }
+        #status-message {
+            margin-top: 20px;
+            font-weight: bold;
+            min-height: 24px;
+        }
+    </style>
+</head>
+<body>
 
-        // --- ФУНКЦИИ РАБОТЫ С БАЗОЙ ДАННЫХ ---
+    <div class="container">
+        <h2>🏁 Гараж Гонщика</h2>
+        <p>Введи своё имя, чтобы начать игру!</p>
+        
+        <!-- Поле ввода имени -->
+        <input type="text" id="player-name" placeholder="Например: Big Boss">
+        
+        <!-- Кнопка -->
+        <button onclick="createAccount()">Войти в гараж</button>
+        
+        <!-- Место для сообщения на экране (опционально) -->
+        <div id="status-message"></div>
+    </div>
 
-        async function loadPlayerFromDB(name) {
-            const message = document.getElementById('accountMessage');
-            message.innerHTML = '<div class="loader"></div><span style="color:#aaa;">Поиск профиля...</span>';
+    <script>
+        // 👇 ВСТАВЬ СЮДА СВОИ КЛЮЧИ ИЗ SUPABASE (Settings -> API)
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL'; 
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5anZraXVzeWl5bGNrYXVqaml2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY5OTk5NzksImV4cCI6MjEwMjU3NTk3OX0.rNZX3L-LET6tHe3juirf2DI7cuKOhSEcReXSUHhoSjI';
+        // 👆
+
+        // Инициализация клиента Supabase
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        console.log('✅ Supabase клиент создан');
+
+        async function createAccount() {
+            const nameInput = document.getElementById('player-name');
+            const statusDiv = document.getElementById('status-message');
             
+            if (!nameInput.value) {
+                statusDiv.textContent = '⚠️ Введи имя!';
+                statusDiv.style.color = '#f1c40f';
+                return;
+            }
+
+            const playerName = nameInput.value.trim();
+            statusDiv.textContent = `💾 Поиск профиля для: ${playerName}...`;
+            statusDiv.style.color = '#fff';
+
             try {
+                // 1. Пытаемся найти игрока по имени в таблице players
                 const { data, error } = await supabase
                     .from('players')
                     .select('*')
-                    .eq('name', name);
-
-                if (error) throw error;
-
-                if (data && data.length > 0) {
-                    // Профиль найден
-                    player = data[0];
-                    message.textContent = `✅ Добро пожаловать, ${player.name}!`;
-                    updateStatsUI();
-                    setTimeout(() => showScreen("mainMenu"), 600);
-                } else {
-                    // Профиля нет, создаем новый
-                    createNewPlayer(name);
-                }
-            } catch (err) {
-                console.error(err);
-                message.textContent = "⚠️ Ошибка загрузки: " + err.message;
-            }
-        }
-
-        async function createNewPlayer(name) {
-            const message = document.getElementById('accountMessage');
-            message.innerHTML = '<div class="loader"></div><span style="color:#aaa;">Создание профиля...</span>';
-
-            try {
-                const newPlayerData = {
-                    name: name,
-                    money: 50000,
-                    gold: 100,
-                    experience: 0,
-                    level: 1
-                };
-
-                const { data, error } = await supabase
-                    .from('players')
-                    .insert([newPlayerData])
-                    .select(); // Возвращаем данные сразу после вставки
-
-                if (error) throw error;
-                
-                player = data[0]; // Получаем ID и остальные данные от БД
-                message.textContent = `✅ Профиль создан! Баланс: ${player.money}$`;
-                updateStatsUI();
-                setTimeout(() => showScreen("mainMenu"), 600);
-            } catch (err) {
-                console.error(err);
-                message.textContent = "❌ Ошибка создания: " + err.message;
-            }
-        }
-
-        async function savePlayerToDB() {
-            if (!player) return;
-            
-            try {
-                const { error } = await supabase
-                    .from('players')
-                    .upsert({
-                        id: player.id, // Важно обновлять по ID, а не по имени
-                        money: player.money,
-                        experience: player.experience,
-                        level: player.level
-                    }, {
-                        conflict_strategy: 'merge' // Если нет ID, создаст новую запись
-                    });
+                    .eq('name', playerName);
 
                 if (error) {
-                    console.error("Ошибка сохранения:", error);
-                    alert("Не удалось сохранить прогресс: " + error.message);
-                } else {
-                    console.log("💾 Прогресс сохранен в БД");
+                    console.error('❌ Ошибка запроса:', error);
+                    statusDiv.textContent = '❌ Ошибка базы данных. Проверь консоль (F12).';
+                    statusDiv.style.color = '#ff4757';
+                    return;
                 }
-            } catch (e) {
-                console.error(e);
-            }
-        }
 
-        // --- ЛОГИКА ИНТЕРФЕЙСА ---
-
-        function updateStatsUI() {
-            if (!player) return;
-            document.getElementById('statName').textContent = player.name;
-            document.getElementById('statMoney').textContent = player.money;
-            document.getElementById('statGold').textContent = player.gold;
-            document.getElementById('statLevel').textContent = player.level;
-        }
-
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(el => el.style.display = 'none');
-            const screen = document.getElementById(screenId);
-            if(screen) screen.style.display = 'block';
-        }
-
-        function createAccount() {
-            const input = document.getElementById("playerNameInput");
-            const name = input.value.trim();
-            
-            if (name.length < 2) {
-                document.getElementById('accountMessage').textContent = "⚠️ Имя слишком короткое!";
-                return;
-            }
-            
-            // Запускаем загрузку из БД
-            loadPlayerFromDB(name);
-        }
-
-        // --- ЛОГИКА ГОНКИ ---
-
-        function startRace() {
-            if (!player) return;
-
-            const cost = 500;
-            if (player.money < cost) {
-                alert("❌ Недостаточно денег для участия! Нужно " + cost + "$");
-                return;
-            }
-
-            showScreen('raceScreen');
-            const statusEl = document.getElementById('raceStatus');
-            statusEl.textContent = "На старт...";
-            const raceBtn = document.getElementById('raceBtn');
-            if(raceBtn) raceBtn.disabled = true;
-
-            setTimeout(() => {
-                statusEl.textContent = "Внимание...";
-                setTimeout(() => {
-                    statusEl.textContent = "МАРШ! 🏁";
+                // Если игрок найден
+                if (data && data.length > 0) {
+                    const player = data[0];
+                    console.log(`✅ Профиль найден! Привет, ${player.name}`);
+                    console.log(`💰 Баланс: ${player.balance}$`);
                     
-                    const car = document.getElementById('carElement');
-                    if (!car) return;
-
-                    car.style.transition = 'bottom 2.5s linear';
-                    car.style.bottom = '400px'; 
+                    statusDiv.textContent = `✅ Привет, ${player.name}! Баланс: ${player.balance}$`;
+                    statusDiv.style.color = '#2ed573';
                     
-                    setTimeout(() => {
-                        const winChance = Math.random(); 
-                        const reward = Math.floor(Math.random() * (3000 - 1000)) + 1000;
-                        
-                        if (winChance > 0.3) {
-                            player.money += reward;
-                            statusEl.textContent = "🎉 ПОБЕДА! Ты чемпион!";
-                            statusEl.style.color = "#00d2d3";
-                        } else {
-                            player.experience += 50;
-                            // Здесь можно добавить логику прокачки уровня
-                            statusEl.textContent = "💥 Ты проиграл заезд, но получил опыт!";
-                            statusEl.style.color = "#ff4757";
-                        }
+                    // Тут можно добавить переход на следующий экран
+                    alert(`Гараж открыт! Баланс: ${player.balance}$`);
+                } 
+                // Если игрока нет — создаём нового
+                else {
+                    console.log(`🆕 Игрока нет, создаём новый профиль...`);
+                    statusDiv.textContent = '🆕 Создаём новый профиль...';
+                    statusDiv.style.color = '#fff';
 
-                        player.money -= cost; 
-                        
-                        // Сохраняем результат в базу данных
-                        savePlayerToDB(); 
-                        updateStatsUI();
+                    const { data: newData, error: newError } = await supabase
+                        .from('players')
+                        .insert([{ name: playerName, balance: 50000 }]);
 
-                        setTimeout(() => {
-                            showScreen('mainMenu');
-                            if(raceBtn) raceBtn.disabled = false;
-                        }, 2000);
-                    }, 2500); 
-                }, 1000);
-            }, 1000);
+                    if (newError) {
+                        console.error('❌ Ошибка создания:', newError);
+                        statusDiv.textContent = '❌ Не удалось создать профиль.';
+                        return;
+                    }
+
+                    console.log(`✅ Профиль создан! Баланс: 50000$`);
+                    statusDiv.textContent = `✅ Профиль создан! Баланс: 50000$`;
+                    statusDiv.style.color = '#2ed573';
+
+                    alert(`Гараж открыт! Ты получил стартовые 50000$.`);
+                }
+            } catch (err) {
+                console.error('💥 Критическая ошибка:', err);
+                statusDiv.textContent = '💥 Что-то пошло не так. Смотри консоль.';
+            }
         }
+    </script>
+</body>
+</html>
