@@ -3,99 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <title>Гонки: Big Boss</title>
-    
     <style>
-        /* --- СТИЛИ (ФОН И КРАСОТА) --- */
         body { 
             font-family: 'Segoe UI', sans-serif; 
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            overflow: hidden; /* Чтобы не было полос прокрутки */
-            
-            /* 1. Сначала ставим картинку (если есть) */
+            margin: 0; padding: 0; height: 100vh; overflow: hidden;
+            /* Фон: картинка или градиент */
             background-image: url('bg.jpg'); 
             background-size: cover;
             background-position: center;
-            
-            /* 2. Если картинки нет, сработает этот крутой градиент */
             background: radial-gradient(circle at center, #1e1e2e 0%, #2a2a3e 50%, #111 100%);
             color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            display: flex; justify-content: center; align-items: center;
         }
-
-        /* Затемнение поверх фона, чтобы текст читался */
         .overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.65);
-            z-index: 1;
-            pointer-events: none;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.65); z-index: 1; pointer-events: none;
         }
-
         .container {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            width: 360px;
-            padding: 30px;
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(15px); /* Эффект матового стекла */
-            border-radius: 20px;
+            position: relative; z-index: 2; text-align: center; width: 360px;
+            padding: 30px; background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px); border-radius: 20px;
             box-shadow: 0 20px 50px rgba(0,0,0,0.5);
             border: 1px solid rgba(255,255,255,0.1);
         }
-
-        h1 { 
-            color: #00d2d3; 
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 15px;
-            text-shadow: 0 0 15px rgba(0, 210, 211, 0.5);
-        }
-
-        input {
-            width: 100%;
-            padding: 15px;
-            font-size: 18px;
-            border-radius: 12px;
-            border: none;
-            outline: none;
-            box-sizing: border-box;
-            background: rgba(255,255,255,0.95);
-            color: #333;
-            margin-bottom: 10px;
-        }
-
+        h1 { color: #00d2d3; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; text-shadow: 0 0 15px rgba(0, 210, 211, 0.5); }
+        input { width: 100%; padding: 15px; font-size: 18px; border-radius: 12px; border: none; outline: none; background: rgba(255,255,255,0.95); color: #333; margin-bottom: 10px; }
         button {
-            width: 100%;
-            padding: 16px;
-            font-size: 18px;
-            cursor: pointer;
-            background: linear-gradient(45deg, #ff4757, #ff6b81);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-weight: bold;
-            box-shadow: 0 8px 20px rgba(255, 71, 87, 0.4);
-            transition: all 0.2s;
+            width: 100%; padding: 16px; font-size: 18px; cursor: pointer;
+            background: linear-gradient(45deg, #ff4757, #ff6b81); color: white;
+            border: none; border-radius: 12px; font-weight: bold;
+            box-shadow: 0 8px 20px rgba(255, 71, 87, 0.4); transition: all 0.2s;
         }
-
         button:hover { transform: scale(1.02); box-shadow: 0 12px 25px rgba(255, 71, 87, 0.6); }
         button:active { transform: scale(0.98); }
-
         #accountMessage { margin-top: 15px; min-height: 24px; font-weight: bold; }
-
-        /* Блок статистики */
+        
         .stats-panel {
-            margin-top: 25px;
-            text-align: left;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 20px;
-            border-radius: 15px;
-            border: 1px solid rgba(0, 210, 211, 0.3);
+            margin-top: 25px; text-align: left; background: rgba(0, 0, 0, 0.5);
+            padding: 20px; border-radius: 15px; border: 1px solid rgba(0, 210, 211, 0.3);
         }
         .stat-row { margin: 8px 0; font-size: 17px; display: flex; justify-content: space-between; }
         .money-val { color: #00d2d3; font-weight: bold; font-size: 1.2em; }
@@ -103,72 +48,35 @@
 
         .screen { display: none; animation: fadeIn 0.5s ease; }
         #loginScreen { display: block; }
-
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Экран самой гонки (новый стиль) */
+        /* Экран гонки */
         #raceScreen {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 999;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 999; flex-direction: column;
+            justify-content: center; align-items: center;
         }
-        
         .race-track {
-            width: 80%;
-            height: 400px;
-            border: 4px solid #555;
-            background: #222;
-            position: relative;
-            overflow: hidden;
-            margin-bottom: 20px;
+            width: 80%; height: 400px; border: 4px solid #555; background: #222;
+            position: relative; overflow: hidden; margin-bottom: 20px;
         }
         .car {
-            position: absolute;
-            bottom: 10px; /* Старт снизу */
-            left: 50%;
-            transform: translateX(-50%);
-            width: 60px;
-            height: 80px;
-            background: red; /* Цвет машины */
-            clip-path: polygon(0 20%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%); /* Форма машинки */
-            box-shadow: 0 0 10px white;
-            transition: bottom 2s linear; /* Анимация движения */
+            position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+            width: 60px; height: 80px; background: red;
+            clip-path: polygon(0 20%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%);
+            box-shadow: 0 0 10px white; transition: bottom 2s linear;
         }
-        #carElement { bottom: 10px !important; } /* Сброс для анимации */
-
-        .race-controls {
-            margin-top: 20px;
-            display: flex;
-            gap: 15px;
-        }
+        #carElement { bottom: 10px !important; }
+        .race-controls { margin-top: 20px; display: flex; gap: 15px; }
         .race-btn {
-            padding: 15px 30px;
-            font-size: 18px;
-            background: #00d2d3;
-            color: black;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
+            padding: 15px 30px; font-size: 18px; background: #00d2d3;
+            color: black; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;
         }
-        .race-status {
-            font-size: 24px;
-            font-weight: bold;
-            margin-top: 10px;
-            min-height: 30px;
-        }
+        .race-status { font-size: 24px; font-weight: bold; margin-top: 10px; min-height: 30px; }
     </style>
 </head>
 <body>
-
-    <!-- Затемнение фона -->
     <div class="overlay"></div>
-
     <div class="container">
         <!-- ЭКРАН ВХОДА -->
         <div id="loginScreen" class="screen">
@@ -182,40 +90,31 @@
         <!-- ГЛАВНОЕ МЕНЮ -->
         <div id="mainMenu" class="screen">
             <h1 id="playerTitle">Профиль</h1>
-            
             <div class="stats-panel">
                 <div class="stat-row"><span>Имя:</span> <span id="statName">--</span></div>
                 <div class="stat-row"><span>Деньги:</span> <span class="money-val" id="statMoney">0</span></div>
                 <div class="stat-row"><span>Золото:</span> <span class="gold-val" id="statGold">0</span></div>
                 <div class="stat-row"><span>Уровень:</span> <span id="statLevel">1</span></div>
             </div>
-
             <button id="raceBtn" onclick="startRace()">СТАРТ ГОНКИ</button>
         </div>
     </div>
 
-    <!-- ЭКРАН ГОНКИ (ПОЯВЛЯЕТСЯ ВМЕСТО МЕНЮ) -->
+    <!-- ЭКРАН ГОНКИ -->
     <div id="raceScreen" class="screen">
         <h1 style="color: #00d2d3;">ГОНКА!</h1>
         <p style="color: #aaa; margin-bottom: 20px;">Доедь до финиша!</p>
-        
         <div class="race-track">
-            <!-- Машина будет здесь -->
             <div id="carElement" class="car"></div>
         </div>
-
         <div class="race-status" id="raceStatus">Старт...</div>
-        
         <div class="race-controls">
             <button class="race-btn" onclick="cancelRace()">Отмена</button>
         </div>
     </div>
 
-    <!-- ПОДКЛЮЧЕНИЕ SUPABASE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <script>
-        // --- НАСТРОЙКИ ---
         const SUPABASE_URL = "https://qyjvkiusyiylckaujjiv.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5anZraXVzeWl5bGNrYXVqaml2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY5OTk5NzksImV4cCI6MjEwMjU3NTk3OX0.rNZX3L-LET6tHe3juirf2DI7cuKOhSEcReXSUHhoSjI";
 
@@ -231,8 +130,13 @@
         function loadLocal() {
             const saved = localStorage.getItem('my_racer_save');
             if (saved) {
-                player = JSON.parse(saved);
-                updateStatsUI();
+                try {
+                    player = JSON.parse(saved);
+                    updateStatsUI();
+                } catch (e) {
+                    console.warn("⚠️ Старые данные повреждены, сбросим.");
+                    localStorage.removeItem('my_racer_save');
+                }
             }
         }
 
@@ -266,17 +170,16 @@
 
             try {
                 let dbData = null;
-                if (typeof supabase !== 'undefined') {
-                    try {
-                        const { data, error } = await supabase
-                            .from('players')
-                            .select('*')
-                            .eq('username', name) 
-                            .maybeSingle();
-                        if (error) console.warn("⚠️ Ошибка базы:", error.message);
-                        else dbData = data;
-                    } catch (e) { console.error(e); }
-                }
+                // Пытаемся взять из базы
+                try {
+                    const { data, error } = await supabase
+                        .from('players')
+                        .select('*')
+                        .eq('username', name) 
+                        .maybeSingle();
+                    if (error) console.warn("⚠️ Ошибка базы:", error.message);
+                    else dbData = data;
+                } catch (e) { console.error(e); }
 
                 if (dbData) {
                     console.log("✅ Игрок найден в базе!");
@@ -289,8 +192,8 @@
                     };
                     message.textContent = `✅ Привет, ${player.name}!`;
                 } else {
-                    // ЛОКАЛЬНЫЙ ПРОФИЛЬ С КРУТЫМ БАЛАНСОМ
-                    console.log("🆕 Создаем локальный профиль с 50к!");
+                    // ЕСЛИ БАЗЫ НЕТ — ДАЁМ КРУТОЙ БАЛАНС
+                    console.log("🆕 Базы нет, создаём локально с 50к!");
                     player = {
                         id: Date.now(),
                         name: name,
@@ -308,11 +211,11 @@
 
             } catch (error) {
                 console.error("💥 Ошибка:", error);
-                message.textContent = "❌ Ошибка системы.";
+                message.textContent = "❌ Ошибка системы. Смотри консоль (F12).";
             }
         }
 
-        // --- ЛОГИКА ГОНКИ (РЕАЛЬНАЯ) ---
+        // --- ЛОГИКА ГОНКИ ---
         function startRace() {
             if (!player) return;
 
@@ -322,32 +225,52 @@
                 return;
             }
 
-            // Показываем экран гонки
             showScreen('raceScreen');
             const statusEl = document.getElementById('raceStatus');
             statusEl.textContent = "На старт...";
-            
-            // Блокируем кнопку в меню (на всякий случай)
             document.getElementById('raceBtn').disabled = true;
 
             setTimeout(() => {
                 statusEl.textContent = "Внимание...";
-                
                 setTimeout(() => {
                     statusEl.textContent = "МАРШ! 🏁";
                     
-                    // ЗАПУСКАЕМ МАШИНКУ
                     const car = document.getElementById('carElement');
-                    car.style.bottom = '400px'; // Машина уезжает вверх (к финишу)
+                    car.style.bottom = '400px'; // Машина едет вверх
                     
-                    // Имитация результата
                     setTimeout(() => {
-                        const winChance = Math.random(); // 0.0 - 1.0
+                        const winChance = Math.random(); 
                         const reward = Math.floor(Math.random() * (3000 - 1000)) + 1000;
                         
                         if (winChance > 0.3) {
-                            // ПОБЕДА
                             player.money += reward;
                             statusEl.textContent = "🎉 ПОБЕДА! Ты чемпион!";
                             statusEl.style.color = "#00d2d3";
                         } else {
+                            player.experience += 50;
+                            statusEl.textContent = "💥 Ты проиграл заезд, но получил опыт!";
+                            statusEl.style.color = "#ff4757";
+                        }
+
+                        player.money -= cost; // Плата за участие
+                        saveLocal();
+                        updateStatsUI();
+
+                        setTimeout(() => {
+                            showScreen('mainMenu');
+                            document.getElementById('raceBtn').disabled = false;
+                        }, 2000);
+                    }, 2500); // Время гонки
+                }, 1000);
+            }, 1000);
+        }
+
+        function cancelRace() {
+            showScreen('mainMenu');
+            document.getElementById('raceBtn').disabled = false;
+        }
+
+        window.onload = loadLocal;
+    </script>
+</body>
+</html>
