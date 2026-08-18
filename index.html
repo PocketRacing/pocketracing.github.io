@@ -41,7 +41,6 @@
         #loginScreen { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Экран гонки */
         #raceScreen {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9); z-index: 999; flex-direction: column;
@@ -54,12 +53,9 @@
         .car {
             position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
             width: 60px; height: 80px; background: red;
-            /* clip-path для формы машины */
             clip-path: polygon(0 20%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%);
             box-shadow: 0 0 10px white;
-            /* Убрал transition здесь, будем двигать через JS для контроля скорости */
         }
-        /* УДАЛЕНО: #carElement { bottom: 10px !important; } */
         
         .race-controls { margin-top: 20px; display: flex; gap: 15px; }
         .race-btn {
@@ -107,23 +103,29 @@
         </div>
     </div>
 
-    <!-- Скрипты подключаем В КОНЦЕ body -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <script>
         // --- НАСТРОЙКИ ---
         const SUPABASE_URL = "https://qyjvkiusyiylckaujjiv.supabase.co";
-        // ВНИМАНИЕ: Никогда не храни ключи в публичном коде. Здесь заглушка.
-        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5anZraXVzeWl5bGNrYXVqaml2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY5OTk5NzksImV4cCI6MjEwMjU3NTk3OX0.rNZX3L-LET6tHe3juirf2DI7cuKOhSEcReXSUHhoSjI"; 
+        
+        // ⚠️ ВСТАВЬ СЮДА СВОЙ НОВЫЙ КЛЮЧ (Legacy anon), который ты только что сгенерировал!
+        // Если ключа нет, игра будет работать только на localStorage (данные пропадут при очистке браузера)
+        const SUPABASE_KEY = "ВСТАВЬ_СЮДА_НОВЫЙ_КЛЮЧ"; 
         
         let supabase = null;
         
-        // Инициализация Supabase (если ключ есть)
-        if (SUPABASE_KEY !== "YOUR_ANON_KEY_HERE") {
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-            console.log("✅ Supabase подключён");
+        // Попытка подключения к базе данных
+        if (SUPABASE_KEY && SUPABASE_KEY !== "ВСТАВЬ_СЮДА_НОВЫЙ_КЛЮЧ") {
+            try {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                console.log("✅ Supabase успешно подключён!");
+            } catch (error) {
+                console.error("❌ Ошибка инициализации Supabase:", error);
+                alert("Ошибка подключения к серверу. Проверьте консоль (F12).");
+            }
         } else {
-            console.warn("⚠️ Supabase не подключен (нет ключа). Работает только локальное сохранение.");
+            console.warn("⚠️ Supabase не подключен. Игра работает в режиме локального сохранения (localStorage). Данные хранятся только в этом браузере.");
         }
 
         let player = null;
@@ -212,8 +214,7 @@
                     const car = document.getElementById('carElement');
                     if (!car) return;
 
-                    // Анимация машины: меняем bottom через JS
-                    car.style.transition = 'bottom 2.5s linear'; // Плавно едем вверх
+                    car.style.transition = 'bottom 2.5s linear';
                     car.style.bottom = '400px'; 
                     
                     setTimeout(() => {
