@@ -60,26 +60,23 @@
         <h2>🏁 Гараж Гонщика</h2>
         <p>Введи своё имя, чтобы начать игру!</p>
         
-        <!-- Поле ввода имени -->
-        <input type="text" id="player-name" placeholder="Например: Big Boss">
-        
-        <!-- Кнопка -->
+        <input type="text" id="player-name" placeholder="Например: Turbo">
         <button onclick="createAccount()">Войти в гараж</button>
-        
-        <!-- Место для сообщения на экране -->
         <div id="status-message"></div>
     </div>
 
     <script>
-        // 👇 ТВОИ КЛЮЧИ (не меняй их!)
+        // 1. Твои ключи
         const SUPABASE_URL = 'https://qyjvkiusyiylckaujjiv.supabase.co'; 
         const SUPABASE_ANON_KEY = 'sb_publishable_dwxrSiVkIY5C8PKu--_UlA_phF5hvRy';
 
-        // 👇 ИСПРАВЛЕНИЕ ОШИБКИ: убрали 'const', чтобы не было конфликта с библиотекой
+        // 2. Инициализация БЕЗ const, чтобы не было конфликта
+        // Мы просто присваиваем значение объекту, который уже создала библиотека
         supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        console.log('✅ Supabase клиент успешно подключён!');
+        console.log('✅ Клиент Supabase готов к работе!');
 
+        // 3. Сама функция (теперь браузер её точно увидит, если нет ошибок выше)
         async function createAccount() {
             const nameInput = document.getElementById('player-name');
             const statusDiv = document.getElementById('status-message');
@@ -95,7 +92,6 @@
             statusDiv.style.color = '#fff';
 
             try {
-                // 1. Пытаемся найти игрока по имени в таблице players
                 const { data, error } = await supabase
                     .from('players')
                     .select('*')
@@ -103,27 +99,18 @@
 
                 if (error) {
                     console.error('❌ Ошибка запроса:', error);
-                    statusDiv.textContent = '❌ Ошибка базы данных. Проверь консоль (F12).';
-                    statusDiv.style.color = '#ff4757';
+                    statusDiv.textContent = '❌ Ошибка базы данных. Смотри консоль.';
                     return;
                 }
 
-                // Если игрок найден
                 if (data && data.length > 0) {
                     const player = data[0];
-                    console.log(`✅ Профиль найден! Привет, ${player.name}`);
-                    console.log(`💰 Баланс: ${player.balance}$`);
-                    
                     statusDiv.textContent = `✅ Привет, ${player.name}! Баланс: ${player.balance}$`;
                     statusDiv.style.color = '#2ed573';
                     alert(`Гараж открыт! Баланс: ${player.balance}$`);
-                } 
-                // Если игрока нет — создаём нового
-                else {
-                    console.log(`🆕 Игрока нет, создаём новый профиль...`);
+                } else {
                     statusDiv.textContent = '🆕 Создаём новый профиль...';
-                    statusDiv.style.color = '#fff';
-
+                    
                     const { data: newData, error: newError } = await supabase
                         .from('players')
                         .insert([{ name: playerName, balance: 50000 }]);
@@ -134,15 +121,13 @@
                         return;
                     }
 
-                    console.log(`✅ Профиль создан! Баланс: 50000$`);
                     statusDiv.textContent = `✅ Профиль создан! Баланс: 50000$`;
                     statusDiv.style.color = '#2ed573';
-
                     alert(`Гараж открыт! Ты получил стартовые 50000$.`);
                 }
             } catch (err) {
                 console.error('💥 Критическая ошибка:', err);
-                statusDiv.textContent = '💥 Что-то пошло не так. Смотри консоль.';
+                statusDiv.textContent = '💥 Что-то пошло не так.';
             }
         }
     </script>
