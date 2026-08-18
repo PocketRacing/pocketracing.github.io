@@ -1,3 +1,4 @@
+console.log("🔥 GAME.JS ЗАПУСТИЛСЯ");
 let player = {
     id: null,
     name: "",
