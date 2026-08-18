@@ -2,29 +2,20 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Гонки: Big Boss</title>
+    <title>Гонки: Big Boss (Локальная версия)</title>
     <style>
         body { 
             font-family: 'Segoe UI', sans-serif; 
             margin: 0; padding: 0; height: 100vh; overflow: hidden;
-            /* Фон: картинка или градиент */
-            background-image: url('bg.jpg'); 
-            background-size: cover;
-            background-position: center;
             background: radial-gradient(circle at center, #1e1e2e 0%, #2a2a3e 50%, #111 100%);
-            color: white;
-            display: flex; justify-content: center; align-items: center;
+            color: white; display: flex; justify-content: center; align-items: center;
         }
-        .overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.65); z-index: 1; pointer-events: none;
-        }
+        .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.65); z-index: 1; pointer-events: none; }
         .container {
             position: relative; z-index: 2; text-align: center; width: 360px;
-            padding: 30px; background: rgba(255, 255, 255, 0.03);
+            padding: 30px; background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(15px); border-radius: 20px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);
         }
         h1 { color: #00d2d3; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px; text-shadow: 0 0 15px rgba(0, 210, 211, 0.5); }
         input { width: 100%; padding: 15px; font-size: 18px; border-radius: 12px; border: none; outline: none; background: rgba(255,255,255,0.95); color: #333; margin-bottom: 10px; }
@@ -106,171 +97,3 @@
         <p style="color: #aaa; margin-bottom: 20px;">Доедь до финиша!</p>
         <div class="race-track">
             <div id="carElement" class="car"></div>
-        </div>
-        <div class="race-status" id="raceStatus">Старт...</div>
-        <div class="race-controls">
-            <button class="race-btn" onclick="cancelRace()">Отмена</button>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        const SUPABASE_URL = "https://qyjvkiusyiylckaujjiv.supabase.co";
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5anZraXVzeWl5bGNrYXVqaml2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY5OTk5NzksImV4cCI6MjEwMjU3NTk3OX0.rNZX3L-LET6tHe3juirf2DI7cuKOhSEcReXSUHhoSjI";
-
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        console.log("✅ Supabase подключен!");
-
-        let player = null;
-
-        function saveLocal() {
-            if (player) localStorage.setItem('my_racer_save', JSON.stringify(player));
-        }
-
-        function loadLocal() {
-            const saved = localStorage.getItem('my_racer_save');
-            if (saved) {
-                try {
-                    player = JSON.parse(saved);
-                    updateStatsUI();
-                } catch (e) {
-                    console.warn("⚠️ Старые данные повреждены, сбросим.");
-                    localStorage.removeItem('my_racer_save');
-                }
-            }
-        }
-
-        function updateStatsUI() {
-            if (!player) return;
-            document.getElementById('statName').textContent = player.name;
-            document.getElementById('statMoney').textContent = player.money;
-            document.getElementById('statGold').textContent = player.gold;
-            document.getElementById('statLevel').textContent = player.level;
-        }
-
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(el => el.style.display = 'none');
-            document.getElementById(screenId).style.display = 'block';
-        }
-
-        async function createAccount() {
-            const input = document.getElementById("playerNameInput");
-            const message = document.getElementById("accountMessage");
-
-            if (!input || !message) return;
-
-            const name = input.value.trim();
-            if (name.length < 2) {
-                message.textContent = "⚠️ Имя слишком короткое!";
-                return;
-            }
-
-            message.textContent = "⏳ Проверка базы...";
-            console.log(`🔍 Ищем игрока: "${name}"`);
-
-            try {
-                let dbData = null;
-                // Пытаемся взять из базы
-                try {
-                    const { data, error } = await supabase
-                        .from('players')
-                        .select('*')
-                        .eq('username', name) 
-                        .maybeSingle();
-                    if (error) console.warn("⚠️ Ошибка базы:", error.message);
-                    else dbData = data;
-                } catch (e) { console.error(e); }
-
-                if (dbData) {
-                    console.log("✅ Игрок найден в базе!");
-                    player = {
-                        id: dbData.id, name: dbData.username,
-                        money: Number(dbData.money) || 5000,
-                        gold: Number(dbData.gold) || 0,
-                        experience: Number(dbData.experience) || 0,
-                        level: Number(dbData.level) || 1
-                    };
-                    message.textContent = `✅ Привет, ${player.name}!`;
-                } else {
-                    // ЕСЛИ БАЗЫ НЕТ — ДАЁМ КРУТОЙ БАЛАНС
-                    console.log("🆕 Базы нет, создаём локально с 50к!");
-                    player = {
-                        id: Date.now(),
-                        name: name,
-                        money: 50000,   // <-- БАЛАНС 50 000
-                        gold: 100,
-                        experience: 0,
-                        level: 1
-                    };
-                    message.textContent = `✅ Профиль создан! Баланс: ${player.money}$`;
-                }
-
-                saveLocal();
-                updateStatsUI();
-                setTimeout(() => showScreen("mainMenu"), 600);
-
-            } catch (error) {
-                console.error("💥 Ошибка:", error);
-                message.textContent = "❌ Ошибка системы. Смотри консоль (F12).";
-            }
-        }
-
-        // --- ЛОГИКА ГОНКИ ---
-        function startRace() {
-            if (!player) return;
-
-            const cost = 500;
-            if (player.money < cost) {
-                alert("❌ Недостаточно денег для участия! Нужно " + cost + "$");
-                return;
-            }
-
-            showScreen('raceScreen');
-            const statusEl = document.getElementById('raceStatus');
-            statusEl.textContent = "На старт...";
-            document.getElementById('raceBtn').disabled = true;
-
-            setTimeout(() => {
-                statusEl.textContent = "Внимание...";
-                setTimeout(() => {
-                    statusEl.textContent = "МАРШ! 🏁";
-                    
-                    const car = document.getElementById('carElement');
-                    car.style.bottom = '400px'; // Машина едет вверх
-                    
-                    setTimeout(() => {
-                        const winChance = Math.random(); 
-                        const reward = Math.floor(Math.random() * (3000 - 1000)) + 1000;
-                        
-                        if (winChance > 0.3) {
-                            player.money += reward;
-                            statusEl.textContent = "🎉 ПОБЕДА! Ты чемпион!";
-                            statusEl.style.color = "#00d2d3";
-                        } else {
-                            player.experience += 50;
-                            statusEl.textContent = "💥 Ты проиграл заезд, но получил опыт!";
-                            statusEl.style.color = "#ff4757";
-                        }
-
-                        player.money -= cost; // Плата за участие
-                        saveLocal();
-                        updateStatsUI();
-
-                        setTimeout(() => {
-                            showScreen('mainMenu');
-                            document.getElementById('raceBtn').disabled = false;
-                        }, 2000);
-                    }, 2500); // Время гонки
-                }, 1000);
-            }, 1000);
-        }
-
-        function cancelRace() {
-            showScreen('mainMenu');
-            document.getElementById('raceBtn').disabled = false;
-        }
-
-        window.onload = loadLocal;
-    </script>
-</body>
-</html>
