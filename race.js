@@ -1,210 +1,195 @@
 /* =========================================
    POCKET RACING — RACE.JS
-   Простая рабочая гонка
+   Полностью рабочий файл для гонки
 ========================================= */
+
+console.log("🔥 RACE.JS ЗАПУСТИЛСЯ");
 
 let playerScore = 0;
 let enemyScore = 0;
 let raceFinished = false;
 
-/* =========================================
-   ЭЛЕМЕНТЫ
-========================================= */
-
-const attackButton =
-    document.getElementById("attackButton");
-
-const raceScore =
-    document.getElementById("raceScore");
-
-const raceMessage =
-    document.getElementById("raceMessage");
+// --- ВСПОМОГАТЕЛЬНАЯ ФУНКЦИЯ: ПОЛУЧИТЬ ЭЛЕМЕНТЫ ---
+// Ищем элементы только тогда, когда они реально нужны, чтобы избежать ошибок
+function getElements() {
+    return {
+        attackButton: document.getElementById("attackButton"),
+        raceScore: document.getElementById("raceScore"),
+        raceMessage: document.getElementById("raceMessage")
+    };
+}
 
 /* =========================================
-   НОВАЯ ГОНКА
+   НАЧАЛО ГОНКИ (Сброс счёта)
 ========================================= */
-
 function initRace() {
-
     playerScore = 0;
     enemyScore = 0;
     raceFinished = false;
 
-    updateRaceScreen();
+    const els = getElements();
+    updateRaceScreen(els);
 
-    if (raceMessage) {
-        raceMessage.textContent =
-            "Готов к гонке? Атакуй!";
+    if (els.raceMessage) {
+        els.raceMessage.textContent = "Готов к гонке? Атакуй!";
+        els.raceMessage.style.color = "#fff";
     }
 
-    if (attackButton) {
-        attackButton.disabled = false;
-    }
-}
-
-/* =========================================
-   ОБНОВЛЕНИЕ СЧЁТА
-========================================= */
-
-function updateRaceScreen() {
-
-    if (raceScore) {
-        raceScore.textContent =
-            `${playerScore} : ${enemyScore}`;
+    if (els.attackButton) {
+        els.attackButton.disabled = false;
+        els.attackButton.textContent = "⚡ Атаковать";
     }
 }
 
 /* =========================================
-   АТАКА ИГРОКА
+   ОБНОВЛЕНИЕ СЧЁТА НА ЭКРАНЕ
 ========================================= */
+function updateRaceScreen(els) {
+    if (!els.raceScore) return;
+    els.raceScore.textContent = `${playerScore} : ${enemyScore}`;
+}
 
+/* =========================================
+   ДЕЙСТВИЕ ИГРОКА (КНОПКА АТАКОВАТЬ)
+========================================= */
 function playerAttack() {
+    const els = getElements();
 
-    if (raceFinished) {
+    // Если гонка закончена или кнопка заблокирована — ничего не делаем
+    if (raceFinished || !els.attackButton || els.attackButton.disabled) {
         return;
     }
 
-    /*
-       Случайный шанс успешной атаки
-    */
+    // Блокируем кнопку сразу, чтобы нельзя было спамить кликами
+    els.attackButton.disabled = true;
 
-    const playerHit =
-        Math.random() < 0.7;
+    /*
+       Случайный шанс успешной атаки (70%)
+    */
+    const playerHit = Math.random() < 0.7;
 
     if (playerHit) {
-
         playerScore++;
-
-        if (raceMessage) {
-            raceMessage.textContent =
-                "🔥 Отличная атака!";
+        if (els.raceMessage) {
+            els.raceMessage.textContent = "🔥 Отличная атака!";
+            els.raceMessage.style.color = "#4ade80"; // Зеленый цвет
         }
-
     } else {
-
-        if (raceMessage) {
-            raceMessage.textContent =
-                "💨 Атака не прошла!";
+        if (els.raceMessage) {
+            els.raceMessage.textContent = "💨 Атака не прошла!";
+            els.raceMessage.style.color = "#fbbf24"; // Желтый цвет
         }
     }
+
+    updateRaceScreen(els);
 
     /* ================================
        ПРОВЕРЯЕМ ПОБЕДУ
     ================================= */
-
     if (playerScore >= 3) {
-
-        finishRace(true);
-
+        finishRace(true, els);
         return;
     }
 
     /* ================================
-       ХОД СОПЕРНИКА
+       ХОД СОПЕРНИКА (с задержкой для эффекта)
     ================================= */
-
-    enemyTurn();
+    setTimeout(() => {
+        enemyTurn(els);
+    }, 800); // Ждем 0.8 секунды перед ходом врага
 }
 
 /* =========================================
-   ХОД ПОЛИЦИИ
+   ХОД ПОЛИЦИИ (ВРАГ)
 ========================================= */
-
-function enemyTurn() {
-
+function enemyTurn(els) {
     /*
-       Небольшая вероятность ответной атаки
+       Вероятность ответной атаки (45%)
     */
-
-    const enemyHit =
-        Math.random() < 0.45;
+    const enemyHit = Math.random() < 0.45;
 
     if (enemyHit) {
-
         enemyScore++;
-
-        if (raceMessage) {
-            raceMessage.textContent =
-                "🚓 Полиция отвечает!";
+        if (els.raceMessage) {
+            els.raceMessage.textContent = "🚓 Полиция отвечает!";
+            els.raceMessage.style.color = "#ef4444"; // Красный цвет
         }
-
+    } else {
+        if (els.raceMessage) {
+            els.raceMessage.textContent = "👮 Полиция промахнулась!";
+            els.raceMessage.style.color = "#fff";
+        }
     }
 
-    updateRaceScreen();
+    updateRaceScreen(els);
 
     /* ================================
        ПРОВЕРЯЕМ ПОРАЖЕНИЕ
     ================================= */
-
     if (enemyScore >= 3) {
-
-        finishRace(false);
-
+        finishRace(false, els);
+    } else {
+        // Если игра продолжается, разблокируем кнопку игрока
+        if (els.attackButton) els.attackButton.disabled = false;
     }
 }
 
 /* =========================================
    ЗАВЕРШЕНИЕ ГОНКИ
 ========================================= */
-
-function finishRace(playerWon) {
-
+function finishRace(playerWon, els) {
     raceFinished = true;
-
-    if (attackButton) {
-        attackButton.disabled = true;
+    
+    if (els.attackButton) {
+        els.attackButton.disabled = true;
+        els.attackButton.textContent = "Гонка окончена";
     }
 
     if (playerWon) {
-
-        updateRaceScreen();
-
-        if (raceMessage) {
-            raceMessage.textContent =
-                "🏆 ПОБЕДА! +500 💰 +100 ⭐";
+        updateRaceScreen(els);
+        
+        if (els.raceMessage) {
+            els.raceMessage.textContent = "🏆 ПОБЕДА! +500 💰 +100 ⭐";
+            els.raceMessage.style.color = "#4ade80";
         }
 
-        /*
-           Передаём награду в game.js
-        */
-
+        // --- ВЫЗОВ НАГРАДЫ ИЗ game.js ---
+        // Эта функция ДОЛЖНА быть в game.js!
         if (typeof rewardForWin === "function") {
             rewardForWin();
+        } else {
+            console.error("❌ Ошибка: Функция rewardForWin не найдена! Проверь game.js");
         }
 
-        /*
-           Возвращаем кнопку через небольшую паузу
-        */
-
+        // Через 1.5 секунды показываем финальное сообщение
         setTimeout(() => {
-
-            if (raceMessage) {
-                raceMessage.textContent =
-                    "🏆 Победа! Награда получена.";
+            if (els.raceMessage) {
+                els.raceMessage.textContent = "🎉 Победа! Награда зачислена.";
+                els.raceMessage.style.color = "#fff";
             }
-
-        }, 1200);
+        }, 1500);
 
     } else {
-
-        if (raceMessage) {
-            raceMessage.textContent =
-                "💥 ПОРАЖЕНИЕ! Попробуй ещё раз.";
+        if (els.raceMessage) {
+            els.raceMessage.textContent = "💥 ПОРАЖЕНИЕ! Полиция тебя догнала.";
+            els.raceMessage.style.color = "#ef4444";
         }
-
+        // Можно добавить штраф денег здесь, если хочешь
+        // player.money -= 50; saveLocal(); updateAll();
     }
-
 }
 
 /* =========================================
-   КНОПКА АТАКОВАТЬ
+   ПОДКЛЮЧЕНИЕ СОБЫТИЙ
 ========================================= */
-
-if (attackButton) {
-
-    attackButton.addEventListener(
-        "click",
-        playerAttack
-    );
-
-}
+// Ждем, пока DOM полностью загрузится, прежде чем вешать слушатель
+document.addEventListener("DOMContentLoaded", () => {
+    const els = getElements();
+    
+    if (els.attackButton) {
+        els.attackButton.addEventListener("click", playerAttack);
+        console.log("✅ Кнопка 'Атаковать' подключена");
+    } else {
+        console.warn("⚠️ Кнопка 'attackButton' не найдена в HTML!");
+    }
+});
