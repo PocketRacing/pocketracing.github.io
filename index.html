@@ -209,7 +209,212 @@ P:
 
     <!-- ПРОФИЛЬ -->
 
-    <section id="profile" class=ибка Supabase:",
+    <section id="profile" class=screen hidden">
+
+        <button
+            class="backButton"
+            type="button"
+            onclick="backToMenu()">
+            ← НАЗАД
+        </button>
+
+        <h1>👤 ПРОФИЛЬ</h1>
+
+        <div class="profileCard">
+
+            <h2 id="profileName">
+                Гонщик
+            </h2>
+
+            <p>
+                🏆 Уровень:
+                <b id="profileLevel">1</b>
+            </p>
+
+            <p>
+                ⭐ XP:
+                <b id="profileXP">0</b>
+            </p>
+
+            <p>
+                💰 Монеты:
+                <b id="profileMoney">1000</b>
+            </p>
+
+            <p>
+                💎 Золото:
+                <b id="profileGold">0</b>
+            </p>
+
+        </div>
+
+        <div class="buttons">
+
+            <button
+                type="button"
+                onclick="resetAccount()">
+                ⚠️ СБРОСИТЬ АККАУНТ
+            </button>
+
+        </div>
+
+    </section>
+
+    <!-- ГОНКА -->
+
+    <section id="race" class="screen hidden">
+
+        <button
+            class="backButton"
+            type="button"
+            onclick="openGarage()">
+            ← ГАРАЖ
+        </button>
+
+        <h1>🏁 ГОНКА</h1>
+
+        <div class="raceCars">
+
+            <div class="raceCar">
+
+                <img
+                    src="./car1.png"
+                    alt="Твоя машина"
+                >
+
+                <h2 id="racePlayerName">
+                    Гонщик
+                </h2>
+
+            </div>
+
+            <div class="vs">
+                VS
+            </div>
+
+            <div class="raceCar">
+
+                <img
+                    src="./car2.png"
+                    alt="Police"
+                >
+
+                <h2>🚓 Police</h2>
+
+            </div>
+
+        </div>
+
+        <div class="raceInfo">
+
+            <p>
+                🏆 Счёт:
+                <b id="raceScore">0 : 0</b>
+            </p>
+
+            <p id="raceMessage">
+                Готов к гонке?
+            </p>
+
+        </div>
+
+        <div class="buttons">
+
+            <button
+                id="attackButton"
+                type="button">
+                🔥 АТАКОВАТЬ
+            </button>
+
+        </div>
+
+    </section>
+
+    <!-- МАГАЗИН -->
+
+    <section id="shop" class="screen hidden">
+
+        <button
+            class="backButton"
+            type="button"
+            onclick="backToMenu()">
+            ← НАЗАД
+        </button>
+
+        <h1>💎 МАГАЗИН</h1>
+
+        <div class="shopBalance">
+
+            <p>
+                💰 Монеты:
+                <b id="shopMoney">1000</b>
+            </p>
+
+            <p>
+                💎 Золото:
+                <b id="gold">0</b>
+            </p>
+
+        </div>
+
+        <div class="donateCard">
+
+            <h2>💎 100 ЗОЛОТА</h2>
+
+            <p>
+                Пополнение игрового баланса
+            </p>
+
+            <div class="donatePrice">
+                99 ₽
+            </div>
+
+            <button
+                type="button"
+                onclick="buyGold(100)">
+                💎 КУПИТЬ 100 ЗОЛОТА
+            </button>
+
+            <small>
+                Тестовая покупка. Реальная оплата пока не подключена.
+            </small>
+
+        </div>
+
+        <p id="shopMessage"></p>
+
+    </section>
+
+    <!-- SUPABASE -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        const SUPABASE_URL = "https://qyjvkiusyiylckaujjiv.supabase.co";
+
+        const SUPABASE_KEY = "ТВОЙ_НОВЫЙ_PUBLISHABLE_KEY";
+
+        const supabase = window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        );
+
+        console.log("=== SUPABASE ===");
+        console.log("Supabase подключён!");
+
+        async function testSupabase() {
+
+            console.log("Проверяем игрока Big Boss...");
+
+            const { data, error } = await supabase
+                .from("players")
+                .select("username, money, gold, experience, level")
+                .eq("username", "Big Boss")
+                .single();
+
+            if (error) {
+
+                console.error(ибка Supabase:",
                     error
                 );
 
