@@ -2,20 +2,17 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Гонки: Big Boss Edition</title>
+    <title>Гонки: Big Boss</title>
     
-    <!-- СТИЛИ (Фон, кнопки, красота) -->
     <style>
         body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            /* НАСТРОЙКА ФОНА: замени 'bg.jpg' на имя своего файла */
+            font-family: 'Segoe UI', sans-serif; 
+            /* Если у тебя есть картинка bg.jpg — она встанет сюда. Если нет — будет стильный тёмный фон */
             background-image: url('bg.jpg'); 
             background-size: cover;
             background-position: center;
-            background-attachment: fixed; /* Картинка стоит на месте при прокрутке */
             color: white;
             margin: 0;
-            padding: 0;
             height: 100vh;
             display: flex;
             justify-content: center;
@@ -23,91 +20,71 @@
             overflow: hidden;
         }
 
-        /* Затемнение картинки, чтобы текст читался */
+        /* Затемнение, чтобы текст читался на любой картинке */
         body::before {
             content: "";
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.7); /* Прозрачность 70% */
+            background: rgba(0, 0, 0, 0.7);
             z-index: 1;
         }
 
         .container {
             position: relative;
-            z-index: 2; /* Поверх затемнения */
+            z-index: 2;
             text-align: center;
-            max-width: 400px;
-            width: 90%;
-            padding: 20px;
+            width: 350px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        h1 { 
-            color: #00d2d3; 
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            text-shadow: 0 0 10px rgba(0, 210, 211, 0.5);
-            margin-bottom: 10px;
-        }
-
-        p { color: #ccc; margin-bottom: 20px; }
-
+        h1 { color: #00d2d3; text-transform: uppercase; margin-bottom: 10px; }
+        
         input {
             width: 100%;
-            padding: 15px;
-            font-size: 18px;
+            padding: 12px;
+            font-size: 16px;
             border-radius: 8px;
             border: none;
             outline: none;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            background: rgba(255, 255, 255, 0.9);
+            box-sizing: border-box;
+            background: rgba(255,255,255,0.9);
             color: #333;
         }
 
         button {
             width: 100%;
-            padding: 15px;
-            font-size: 18px;
+            padding: 12px;
+            margin-top: 15px;
+            font-size: 16px;
             cursor: pointer;
             background: linear-gradient(45deg, #ff4757, #ff6b81);
             color: white;
             border: none;
             border-radius: 8px;
             font-weight: bold;
-            box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4);
-            transition: transform 0.1s, box-shadow 0.2s;
-            margin-top: 10px;
+            transition: transform 0.1s;
         }
 
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 71, 87, 0.6);
-        }
+        button:active { transform: scale(0.98); }
 
-        button:active {
-            transform: scale(0.98);
-        }
+        #accountMessage { margin-top: 15px; min-height: 20px; font-weight: bold; }
 
-        #accountMessage {
-            margin-top: 15px;
-            min-height: 24px;
-            font-weight: bold;
-            color: #f1f2f6;
-        }
-
-        .stats-box {
-            background: rgba(0, 0, 0, 0.5);
+        .stats {
+            margin-top: 20px;
+            text-align: left;
+            background: rgba(0,0,0,0.4);
             padding: 15px;
             border-radius: 10px;
-            margin-top: 20px;
-            backdrop-filter: blur(5px);
         }
-        
-        .stat-row { margin: 5px 0; font-size: 16px; }
-        .gold-color { color: gold; }
-        .money-color { color: #00d2d3; }
+        .stat-row { margin: 5px 0; font-size: 18px; }
+        .money-color { color: #00d2d3; font-weight: bold; }
+        .gold-color { color: gold; font-weight: bold; }
 
-        /* Скрываем экраны по умолчанию */
-        .screen { display: none; animation: fadeIn 0.5s ease; }
+        .screen { display: none; animation: fadeIn 0.4s; }
         #loginScreen { display: block; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -118,19 +95,18 @@
     <div class="container">
         <!-- ЭКРАН ВХОДА -->
         <div id="loginScreen" class="screen">
-            <h1>Гонки</h1>
-            <p>Введи имя гонщика:</p>
-            <!-- По умолчанию стоит Big Boss -->
-            <input type="text" id="playerNameInput" placeholder="Имя гонщика" value="Big Boss">
-            <button onclick="createAccount()">ВОЙТИ В ГАРАЖ</button>
+            <h1>Гараж гонщика</h1>
+            <p>Введи имя:</p>
+            <input type="text" id="playerNameInput" placeholder="Имя" value="Big Boss">
+            <button onclick="createAccount()">Войти в гараж</button>
             <div id="accountMessage"></div>
         </div>
 
         <!-- ГЛАВНОЕ МЕНЮ -->
         <div id="mainMenu" class="screen">
-            <h1 id="playerTitle">Профиль гонщика</h1>
+            <h1 id="playerTitle">Профиль</h1>
             
-            <div class="stats-box">
+            <div class="stats">
                 <div class="stat-row"><strong>Имя:</strong> <span id="statName">--</span></div>
                 <div class="stat-row money-color"><strong>Деньги:</strong> $<span id="statMoney">0</span></div>
                 <div class="stat-row gold-color"><strong>Золото:</strong> 🪙<span id="statGold">0</span></div>
@@ -141,12 +117,11 @@
         </div>
     </div>
 
-    <!-- ПОДКЛЮЧЕНИЕ БИБЛИОТЕКИ SUPABASE -->
+    <!-- ПОДКЛЮЧЕНИЕ SUPABASE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- ЛОГИКА ИГРЫ -->
     <script>
-        // --- НАСТРОЙКИ ---
+        // --- НАСТРОЙКИ (ТВОЙ КЛЮЧ УЖЕ ЗДЕСЬ) ---
         const SUPABASE_URL = "https://qyjvkiusyiylckaujjiv.supabase.co";
         const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5anZraXVzeWl5bGNrYXVqaml2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY5OTk5NzksImV4cCI6MjEwMjU3NTk3OX0.rNZX3L-LET6tHe3juirf2DI7cuKOhSEcReXSUHhoSjI";
 
@@ -155,12 +130,10 @@
 
         let player = null;
 
-        // Сохранение в браузере
         function saveLocal() {
             if (player) localStorage.setItem('my_racer_save', JSON.stringify(player));
         }
 
-        // Загрузка из браузера
         function loadLocal() {
             const saved = localStorage.getItem('my_racer_save');
             if (saved) {
@@ -169,7 +142,6 @@
             }
         }
 
-        // Обновление цифр на экране
         function updateStatsUI() {
             if (!player) return;
             document.getElementById('statName').textContent = player.name;
@@ -183,7 +155,6 @@
             document.getElementById(screenId).style.display = 'block';
         }
 
-        // --- ВХОД И СОЗДАНИЕ ПРОФИЛЯ ---
         async function createAccount() {
             const input = document.getElementById("playerNameInput");
             const message = document.getElementById("accountMessage");
@@ -196,62 +167,49 @@
                 return;
             }
 
-            message.textContent = "⏳ Проверка базы данных...";
+            message.textContent = "⏳ Проверка базы...";
             console.log(`🔍 Ищем игрока: "${name}"`);
 
             try {
                 let dbData = null;
 
-                // Пытаемся взять данные из базы
+                // Пытаемся взять из базы
                 if (typeof supabase !== 'undefined') {
                     try {
-                        // ВАЖНО: если в твоей таблице колонка называется 'name', а не 'username', поменяй слово ниже
                         const { data, error } = await supabase
                             .from('players')
                             .select('*')
                             .eq('username', name) 
                             .maybeSingle();
 
-                        if (error) {
-                            console.warn("⚠️ Ошибка базы (игнорируем):", error.message);
-                        } else {
-                            dbData = data;
-                        }
-                    } catch (e) {
-                        console.error("💥 Ошибка запроса:", e);
-                    }
+                        if (error) console.warn("⚠️ Ошибка базы:", error.message);
+                        else dbData = data;
+                    } catch (e) { console.error(e); }
                 }
 
-                // ЕСЛИ НАШЛИ В БАЗЕ
                 if (dbData) {
-                    console.log("✅ Игрок найден в базе!", dbData);
+                    console.log("✅ Игрок найден в базе!");
                     player = {
                         id: dbData.id,
                         name: dbData.username,
-                        money: Number(dbData.money) || 5000, // Берем из базы или дефолт
+                        money: Number(dbData.money) || 5000,
                         gold: Number(dbData.gold) || 0,
                         experience: Number(dbData.experience) || 0,
                         level: Number(dbData.level) || 1
                     };
                     message.textContent = `✅ Привет, ${player.name}! Данные из базы.`;
-                } 
-                // ЕСЛИ НЕ НАШЛИ (или база молчит) -> СОЗДАЕМ С НУЖНЫМ БАЛАНСОМ
-                else {
-                    console.log("🆕 Игрока нет. Создаем локальный профиль с крутым балансом.");
-                    
-                    // НАСТРОЙКА БАЛАНСА ЗДЕСЬ:
-                    const startMoney = 50000; 
-                    const startGold = 100;
-
+                } else {
+                    // ЕСЛИ БАЗЫ НЕТ — ДАЁМ КРУТОЙ БАЛАНС (50к денег)
+                    console.log("🆕 Базы нет, создаём локально с крутым балансом.");
                     player = {
                         id: Date.now(),
                         name: name,
-                        money: startMoney,
-                        gold: startGold,
+                        money: 50000,   // <-- ВОТ ОН, ТВОЙ БАЛАНС
+                        gold: 100,      // <-- И ЗОЛОТО
                         experience: 0,
                         level: 1
                     };
-                    message.textContent = `✅ Профиль создан! Баланс: ${startMoney}$`;
+                    message.textContent = `✅ Профиль создан! Баланс: ${player.money}$`;
                 }
 
                 saveLocal();
@@ -259,63 +217,49 @@
                 setTimeout(() => showScreen("mainMenu"), 600);
 
             } catch (error) {
-                console.error("💥 Критическая ошибка:", error);
+                console.error("💥 Ошибка:", error);
                 message.textContent = "❌ Ошибка системы. Смотри консоль (F12).";
             }
         }
 
-        // --- ГОНКА ---
         function startRace() {
             if (!player) return;
 
-            const cost = 500; // Цена заезда
+            const cost = 500;
             const minReward = 1000;
             const maxReward = 3000;
 
             if (player.money < cost) {
-                alert("❌ Недостаточно денег! Нужно " + cost + "$ для участия.");
+                alert("❌ Недостаточно денег! Нужно " + cost + "$.");
                 return;
             }
 
-            // Блокируем кнопку
             const btn = document.getElementById('raceBtn');
             btn.disabled = true;
-            btn.textContent = "🏁 ГОНКА...";
+            btn.textContent = "🏁 Гонка идёт...";
 
             setTimeout(() => {
-                // Случайный выигрыш (70% шанс победы)
-                const winChance = Math.random(); 
+                const winChance = Math.random(); // 0.0 - 1.0
                 const reward = Math.floor(Math.random() * (maxReward - minReward)) + minReward;
                 
-                let msg = "";
                 if (winChance > 0.3) {
-                    // ПОБЕДА
                     player.money += reward;
-                    msg = `🎉 Победа! Ты заработал ${reward}$!`;
+                    alert(`🎉 Победа! Ты заработал ${reward}$!`);
                 } else {
-                    // ПОРАЖЕНИЕ
-                    msg = "💥 Ты проиграл! Но опыт получен.";
-                    // Можно добавить опыт даже при проигрыше
-                    player.experience += 50; 
+                    alert("💥 Ты проиграл заезд, но получил опыт!");
+                    player.experience += 50;
                 }
 
-                // Списываем стоимость заезда
-                player.money -= cost;
-
+                player.money -= cost; // Платим за участие в любом случае
                 saveLocal();
                 updateStatsUI();
 
-                alert(msg + "\nТвой баланс: " + player.money + "$");
-
                 btn.disabled = false;
                 btn.textContent = "СТАРТ ГОНКИ";
-            }, 2000); // Длительность гонки 2 секунды
+            }, 2000);
         }
 
-        // При загрузке проверяем сохранение
-        window.onload = () => {
-            loadLocal();
-        };
+        window.onload = loadLocal;
     </script>
 </body>
 </html>
