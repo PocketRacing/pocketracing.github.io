@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Гонки: Big Boss</title>
+    <title>Гонки: Big Boss (Real Save)</title>
     <style>
         body { 
             font-family: 'Segoe UI', sans-serif; 
@@ -63,6 +63,10 @@
             color: black; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;
         }
         .race-status { font-size: 24px; font-weight: bold; margin-top: 10px; min-height: 30px; }
+        
+        /* Стили для лоадера */
+        .loader { border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top: 3px solid #00d2d3; width: 20px; height: 20px; animation: spin 1s linear infinite; margin: 10px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
@@ -73,7 +77,7 @@
             <h1>Гараж</h1>
             <p style="color: #aaa;">Введи имя гонщика:</p>
             <input type="text" id="playerNameInput" placeholder="Имя" value="Big Boss">
-            <button onclick="createAccount()">Войти в гараж</button>
+            <button onclick="createAccount()" id="loginBtn">Войти в гараж</button>
             <div id="accountMessage"></div>
         </div>
 
@@ -103,49 +107,113 @@
         </div>
     </div>
 
+    <!-- Подключаем библиотеку Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <script>
-        // --- НАСТРОЙКИ ---
+        // --- НАСТРОЙКИ (ВСТАВЬ СВОЙ КЛЮЧ НИЖЕ) ---
         const SUPABASE_URL = "https://qyjvkiusyiylckaujjiv.supabase.co";
-        
-        // ⚠️ ВСТАВЬ СЮДА СВОЙ НОВЫЙ КЛЮЧ (Legacy anon), который ты только что сгенерировал!
-        // Если ключа нет, игра будет работать только на localStorage (данные пропадут при очистке браузера)
-        const SUPABASE_KEY = "ВСТАВЬ_СЮДА_НОВЫЙ_КЛЮЧ"; 
+        // ⚠️ ВСТАВЬ СЮДА СВОЙ НОВЫЙ КЛЮЧ: sb_publishable_...
+        const SUPABASE_KEY = "sb_publishable_dwxrSiVkIY5C8PKu--_UlA_phF5hvRy"; 
         
         let supabase = null;
-        
-        // Попытка подключения к базе данных
-        if (SUPABASE_KEY && SUPABASE_KEY !== "ВСТАВЬ_СЮДА_НОВЫЙ_КЛЮЧ") {
-            try {
-                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                console.log("✅ Supabase успешно подключён!");
-            } catch (error) {
-                console.error("❌ Ошибка инициализации Supabase:", error);
-                alert("Ошибка подключения к серверу. Проверьте консоль (F12).");
-            }
-        } else {
-            console.warn("⚠️ Supabase не подключен. Игра работает в режиме локального сохранения (localStorage). Данные хранятся только в этом браузере.");
-        }
-
         let player = null;
 
-        function saveLocal() {
-            if (player) localStorage.setItem('my_racer_save', JSON.stringify(player));
+        // Инициализация клиента
+        if (SUPABASE_KEY && SUPABASE_KEY !== "sb_publishable_...") {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            console.log("✅ Supabase клиент создан");
+        } else {
+            alert("❌ Ошибка: Не вставлен API ключ! Вставь его в код.");
         }
 
-        function loadLocal() {
-            const saved = localStorage.getItem('my_racer_save');
-            if (saved) {
-                try {
-                    player = JSON.parse(saved);
+        // --- ФУНКЦИИ РАБОТЫ С БАЗОЙ ДАННЫХ ---
+
+        async function loadPlayerFromDB(name) {
+            const message = document.getElementById('accountMessage');
+            message.innerHTML = '<div class="loader"></div><span style="color:#aaa;">Поиск профиля...</span>';
+            
+            try {
+                const { data, error } = await supabase
+                    .from('players')
+                    .select('*')
+                    .eq('name', name);
+
+                if (error) throw error;
+
+                if (data && data.length > 0) {
+                    // Профиль найден
+                    player = data[0];
+                    message.textContent = `✅ Добро пожаловать, ${player.name}!`;
                     updateStatsUI();
-                } catch (e) {
-                    console.warn("⚠️ Старые данные повреждены, сбрасываем.");
-                    localStorage.removeItem('my_racer_save');
+                    setTimeout(() => showScreen("mainMenu"), 600);
+                } else {
+                    // Профиля нет, создаем новый
+                    createNewPlayer(name);
                 }
+            } catch (err) {
+                console.error(err);
+                message.textContent = "⚠️ Ошибка загрузки: " + err.message;
             }
         }
+
+        async function createNewPlayer(name) {
+            const message = document.getElementById('accountMessage');
+            message.innerHTML = '<div class="loader"></div><span style="color:#aaa;">Создание профиля...</span>';
+
+            try {
+                const newPlayerData = {
+                    name: name,
+                    money: 50000,
+                    gold: 100,
+                    experience: 0,
+                    level: 1
+                };
+
+                const { data, error } = await supabase
+                    .from('players')
+                    .insert([newPlayerData])
+                    .select(); // Возвращаем данные сразу после вставки
+
+                if (error) throw error;
+                
+                player = data[0]; // Получаем ID и остальные данные от БД
+                message.textContent = `✅ Профиль создан! Баланс: ${player.money}$`;
+                updateStatsUI();
+                setTimeout(() => showScreen("mainMenu"), 600);
+            } catch (err) {
+                console.error(err);
+                message.textContent = "❌ Ошибка создания: " + err.message;
+            }
+        }
+
+        async function savePlayerToDB() {
+            if (!player) return;
+            
+            try {
+                const { error } = await supabase
+                    .from('players')
+                    .upsert({
+                        id: player.id, // Важно обновлять по ID, а не по имени
+                        money: player.money,
+                        experience: player.experience,
+                        level: player.level
+                    }, {
+                        conflict_strategy: 'merge' // Если нет ID, создаст новую запись
+                    });
+
+                if (error) {
+                    console.error("Ошибка сохранения:", error);
+                    alert("Не удалось сохранить прогресс: " + error.message);
+                } else {
+                    console.log("💾 Прогресс сохранен в БД");
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        // --- ЛОГИКА ИНТЕРФЕЙСА ---
 
         function updateStatsUI() {
             if (!player) return;
@@ -161,36 +229,21 @@
             if(screen) screen.style.display = 'block';
         }
 
-        async function createAccount() {
+        function createAccount() {
             const input = document.getElementById("playerNameInput");
-            const message = document.getElementById("accountMessage");
-
-            if (!input || !message) return;
-
             const name = input.value.trim();
+            
             if (name.length < 2) {
-                message.textContent = "⚠️ Имя слишком короткое!";
+                document.getElementById('accountMessage').textContent = "⚠️ Имя слишком короткое!";
                 return;
             }
-
-            message.textContent = "⏳ Создание профиля...";
             
-            player = {
-                id: Date.now(),
-                name: name,
-                money: 50000,   
-                gold: 100,
-                experience: 0,
-                level: 1
-            };
-            message.textContent = `✅ Профиль создан! Баланс: ${player.money}$`;
-
-            saveLocal();
-            updateStatsUI();
-            setTimeout(() => showScreen("mainMenu"), 600);
+            // Запускаем загрузку из БД
+            loadPlayerFromDB(name);
         }
 
         // --- ЛОГИКА ГОНКИ ---
+
         function startRace() {
             if (!player) return;
 
@@ -227,12 +280,15 @@
                             statusEl.style.color = "#00d2d3";
                         } else {
                             player.experience += 50;
+                            // Здесь можно добавить логику прокачки уровня
                             statusEl.textContent = "💥 Ты проиграл заезд, но получил опыт!";
                             statusEl.style.color = "#ff4757";
                         }
 
                         player.money -= cost; 
-                        saveLocal();
+                        
+                        // Сохраняем результат в базу данных
+                        savePlayerToDB(); 
                         updateStatsUI();
 
                         setTimeout(() => {
@@ -243,14 +299,3 @@
                 }, 1000);
             }, 1000);
         }
-
-        function cancelRace() {
-            showScreen('mainMenu');
-            const btn = document.getElementById('raceBtn');
-            if(btn) btn.disabled = false;
-        }
-
-        window.onload = loadLocal;
-    </script>
-</body>
-</html>
