@@ -97,3 +97,136 @@
         <p style="color: #aaa; margin-bottom: 20px;">Доедь до финиша!</p>
         <div class="race-track">
             <div id="carElement" class="car"></div>
+        </div>
+        <div class="race-status" id="raceStatus">Старт...</div>
+        <div class="race-controls">
+            <button class="race-btn" onclick="cancelRace()">Отмена</button>
+        </div>
+    </div>
+
+    <script>
+        // --- ВАЖНО: ЗДЕСЬ НЕТ SUPABASE. ВСЁ РАБОТАЕТ ЛОКАЛЬНО. ---
+        
+        let player = null;
+
+        function saveLocal() {
+            if (player) localStorage.setItem('my_racer_save', JSON.stringify(player));
+        }
+
+        function loadLocal() {
+            const saved = localStorage.getItem('my_racer_save');
+            if (saved) {
+                try {
+                    player = JSON.parse(saved);
+                    updateStatsUI();
+                } catch (e) {
+                    console.warn("⚠️ Старые данные повреждены, сбрасываем.");
+                    localStorage.removeItem('my_racer_save');
+                }
+            }
+        }
+
+        function updateStatsUI() {
+            if (!player) return;
+            document.getElementById('statName').textContent = player.name;
+            document.getElementById('statMoney').textContent = player.money;
+            document.getElementById('statGold').textContent = player.gold;
+            document.getElementById('statLevel').textContent = player.level;
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(el => el.style.display = 'none');
+            document.getElementById(screenId).style.display = 'block';
+        }
+
+        async function createAccount() {
+            // Убрали всю логику Supabase, чтобы кнопка точно работала
+            const input = document.getElementById("playerNameInput");
+            const message = document.getElementById("accountMessage");
+
+            if (!input || !message) return;
+
+            const name = input.value.trim();
+            if (name.length < 2) {
+                message.textContent = "⚠️ Имя слишком короткое!";
+                return;
+            }
+
+            message.textContent = "⏳ Создание профиля...";
+            
+            // ЛОКАЛЬНОЕ СОЗДАНИЕ (гарантированно работает)
+            console.log("🆕 Создаем локальный профиль с 50к!");
+            player = {
+                id: Date.now(),
+                name: name,
+                money: 50000,   // <-- БАЛАНС 50 000
+                gold: 100,
+                experience: 0,
+                level: 1
+            };
+            message.textContent = `✅ Профиль создан! Баланс: ${player.money}$`;
+
+            saveLocal();
+            updateStatsUI();
+            setTimeout(() => showScreen("mainMenu"), 600);
+        }
+
+        // --- ЛОГИКА ГОНКИ ---
+        function startRace() {
+            if (!player) return;
+
+            const cost = 500;
+            if (player.money < cost) {
+                alert("❌ Недостаточно денег для участия! Нужно " + cost + "$");
+                return;
+            }
+
+            showScreen('raceScreen');
+            const statusEl = document.getElementById('raceStatus');
+            statusEl.textContent = "На старт...";
+            document.getElementById('raceBtn').disabled = true;
+
+            setTimeout(() => {
+                statusEl.textContent = "Внимание...";
+                setTimeout(() => {
+                    statusEl.textContent = "МАРШ! 🏁";
+                    
+                    const car = document.getElementById('carElement');
+                    car.style.bottom = '400px'; // Машина едет вверх
+                    
+                    setTimeout(() => {
+                        const winChance = Math.random(); 
+                        const reward = Math.floor(Math.random() * (3000 - 1000)) + 1000;
+                        
+                        if (winChance > 0.3) {
+                            player.money += reward;
+                            statusEl.textContent = "🎉 ПОБЕДА! Ты чемпион!";
+                            statusEl.style.color = "#00d2d3";
+                        } else {
+                            player.experience += 50;
+                            statusEl.textContent = "💥 Ты проиграл заезд, но получил опыт!";
+                            statusEl.style.color = "#ff4757";
+                        }
+
+                        player.money -= cost; // Плата за участие
+                        saveLocal();
+                        updateStatsUI();
+
+                        setTimeout(() => {
+                            showScreen('mainMenu');
+                            document.getElementById('raceBtn').disabled = false;
+                        }, 2000);
+                    }, 2500); // Время гонки
+                }, 1000);
+            }, 1000);
+        }
+
+        function cancelRace() {
+            showScreen('mainMenu');
+            document.getElementById('raceBtn').disabled = false;
+        }
+
+        window.onload = loadLocal;
+    </script>
+</body>
+</html>
