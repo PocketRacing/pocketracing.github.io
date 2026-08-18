@@ -102,71 +102,72 @@ async function createAccount() {
     const input = document.getElementById("playerNameInput");
     const message = document.getElementById("accountMessage");
 
-    if (!input || !message) {
-        console.error("❌ Элементы input или message не найдены в HTML!");
-        return;
-    }
+    if (!input || !message) return;
 
     const name = input.value.trim();
-
     if (name.length < 2) {
-        message.textContent = "⚠️ Имя должно быть минимум 2 символа.";
+        message.textContent = "⚠️ Имя слишком короткое.";
         return;
     }
 
     message.textContent = "⏳ Проверка базы данных...";
-    console.log(`🔍 Ищем игрока: ${name}`);
+    console.log(`🔍 Ищем игрока: "${name}"`);
 
     try {
         let existingData = null;
-        let dbError = null;
 
-        // 1. Пытаемся найти в Supabase
         if (typeof supabase !== 'undefined') {
-            try {
-                const { data, error } = await supabase
-                    .from("players")
-                    .select("*")
-                    .eq("username", name)
-                    .maybeSingle(); // maybeSingle не выбрасывает ошибку, если нет данных
+            const { data, error } = await supabase
+                .from('players')
+                .select('*')
+                .eq('username', name) // Важно: колонка должна называться username
+                .maybeSingle();
 
-                if (error) {
-                    dbError = error;
-                    console.warn("⚠️ Ошибка запроса к базе:", error);
-                } else {
-                    existingData = data;
-                    console.log("✅ Данные из базы получены:", existingData);
-                }
-            } catch (e) {
-                dbError = e;
-                console.error("💥 Критический сбой базы:", e);
+            if (error) {
+                console.warn("⚠️ Ошибка базы данных:", error.message);
+            } else {
+                existingData = data;
             }
-        } else {
-            console.warn("⚠️ Supabase не инициализирован в глобальной области видимости.");
         }
 
-        // 2. ЛОГИКА ОБРАБОТКИ РЕЗУЛЬТАТА
-        
-        // Вариант А: Игрок найден в базе
         if (existingData) {
-            // ВАЖНО: Используем названия колонок точно так, как они в базе (username, money и т.д.)
+            // ✅ Игрок найден в базе
             player = {
                 id: existingData.id,
-                name: existingData.username,      // База: username
+                name: existingData.username,
                 money: Number(existingData.money) || 1000,
                 gold: Number(existingData.gold) || 0,
                 experience: Number(existingData.experience) || 0,
                 level: Number(existingData.level) || 1
             };
-            
-            saveLocal(); // Сохраняем в браузер как кэш
-            updateAll(); // Обновляем UI
-            
-            message.textContent = `✅ Привет, ${player.name}! Ты уже есть в базе.`;
-            console.log("🎉 Игрок успешно загружен из базы!");
-            setTimeout(() => showScreen("mainMenu"), 600);
+            saveLocal();
+            updateAll();
+            message.textContent = `✅ Привет, ${player.name}! Данные загружены из базы.`;
+            console.log("🎉 Успешный вход из базы!");
+            setTimeout(() => showScreen("mainMenu"), 500);
             return;
         }
+
+        // ❌ Игрока нет или ошибка -> создаем локально (чтобы игра не ломалась)
+        console.log("🆕 Игрока нет в базе, создаем локальный профиль.");
+        player = {
+            id: Date.now(),
+            name: name,
+            money: 1000,
+            gold: 0,
+            experience: 0,
+            level: 1
+        };
+        saveLocal();
+        updateAll();
+        message.textContent = "✅ Гонщик создан (локально). Данные сохранятся пока открыта вкладка.";
+        setTimeout(() => showScreen("mainMenu"), 500);
+
+    } catch (err) {
+        console.error("💥 Критическая ошибка:", err);
+        message.textContent = "❌ Ошибка системы. Смотри консоль (F12).";
+    }
+}
 
         // Вариант Б: Игрока нет в базе, но мы хотим его создать (или просто сделать локально для теста)
         console.log("🆕 Игрок не найден. Создаем профиль...");
