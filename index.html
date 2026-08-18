@@ -66,20 +66,19 @@
         <!-- Кнопка -->
         <button onclick="createAccount()">Войти в гараж</button>
         
-        <!-- Место для сообщения на экране (опционально) -->
+        <!-- Место для сообщения на экране -->
         <div id="status-message"></div>
     </div>
 
     <script>
-        // 👇 ВСТАВЬ СЮДА СВОИ КЛЮЧИ ИЗ SUPABASE (Settings -> API)
+        // 👇 ТВОИ КЛЮЧИ (не меняй их!)
         const SUPABASE_URL = 'https://qyjvkiusyiylckaujjiv.supabase.co'; 
         const SUPABASE_ANON_KEY = 'sb_publishable_dwxrSiVkIY5C8PKu--_UlA_phF5hvRy';
-        // 👆
 
-        // Инициализация клиента Supabase
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // 👇 ИСПРАВЛЕНИЕ ОШИБКИ: убрали 'const', чтобы не было конфликта с библиотекой
+        supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        console.log('✅ Supabase клиент создан');
+        console.log('✅ Supabase клиент успешно подключён!');
 
         async function createAccount() {
             const nameInput = document.getElementById('player-name');
@@ -117,8 +116,6 @@
                     
                     statusDiv.textContent = `✅ Привет, ${player.name}! Баланс: ${player.balance}$`;
                     statusDiv.style.color = '#2ed573';
-                    
-                    // Тут можно добавить переход на следующий экран
                     alert(`Гараж открыт! Баланс: ${player.balance}$`);
                 } 
                 // Если игрока нет — создаём нового
