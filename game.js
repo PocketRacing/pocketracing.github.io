@@ -102,46 +102,97 @@ async function createAccount() {
     const input = document.getElementById("playerNameInput");
     const message = document.getElementById("accountMessage");
 
-    if (!input || !message) return;
+    if (!input || !message) {
+        console.error("❌ Элементы input или message не найдены в HTML!");
+        return;
+    }
 
     const name = input.value.trim();
 
     if (name.length < 2) {
-        message.textContent = "⚠️ Введи имя минимум из 2 символов.";
+        message.textContent = "⚠️ Имя должно быть минимум 2 символа.";
         return;
     }
 
-    message.textContent = "⏳ Подключаемся к базе...";
+    message.textContent = "⏳ Проверка базы данных...";
+    console.log(`🔍 Ищем игрока: ${name}`);
 
     try {
-        // 1. Ищем игрока
-        const existing = await findPlayer(name);
+        let existingData = null;
+        let dbError = null;
 
-        // 2. Если есть - загружаем
-        if (existing) {
+        // 1. Пытаемся найти в Supabase
+        if (typeof supabase !== 'undefined') {
+            try {
+                const { data, error } = await supabase
+                    .from("players")
+                    .select("*")
+                    .eq("username", name)
+                    .maybeSingle(); // maybeSingle не выбрасывает ошибку, если нет данных
+
+                if (error) {
+                    dbError = error;
+                    console.warn("⚠️ Ошибка запроса к базе:", error);
+                } else {
+                    existingData = data;
+                    console.log("✅ Данные из базы получены:", existingData);
+                }
+            } catch (e) {
+                dbError = e;
+                console.error("💥 Критический сбой базы:", e);
+            }
+        } else {
+            console.warn("⚠️ Supabase не инициализирован в глобальной области видимости.");
+        }
+
+        // 2. ЛОГИКА ОБРАБОТКИ РЕЗУЛЬТАТА
+        
+        // Вариант А: Игрок найден в базе
+        if (existingData) {
+            // ВАЖНО: Используем названия колонок точно так, как они в базе (username, money и т.д.)
             player = {
-                id: existing.id,
-                name: existing.username,
-                money: Number(existing.money),
-                gold: Number(existing.gold),
-                experience: Number(existing.experience),
-                level: Number(existing.level)
+                id: existingData.id,
+                name: existingData.username,      // База: username
+                money: Number(existingData.money) || 1000,
+                gold: Number(existingData.gold) || 0,
+                experience: Number(existingData.experience) || 0,
+                level: Number(existingData.level) || 1
             };
-            saveLocal();
-            updateAll();
-            message.textContent = "✅ Игрок найден!";
-            setTimeout(() => showScreen("mainMenu"), 500);
+            
+            saveLocal(); // Сохраняем в браузер как кэш
+            updateAll(); // Обновляем UI
+            
+            message.textContent = `✅ Привет, ${player.name}! Ты уже есть в базе.`;
+            console.log("🎉 Игрок успешно загружен из базы!");
+            setTimeout(() => showScreen("mainMenu"), 600);
             return;
         }
 
-        // 3. Если нет - создаем
-        message.textContent = "🏎️ Создаём гонщика...";
-        const created = await createPlayer(name);
+        // Вариант Б: Игрока нет в базе, но мы хотим его создать (или просто сделать локально для теста)
+        console.log("🆕 Игрок не найден. Создаем профиль...");
+        
+        player = {
+            id: Date.now(), // Временный ID для локального режима
+            name: name,
+            money: 1000,
+            gold: 0,
+            experience: 0,
+            level: 1
+        };
 
-        if (!created) {
-            message.textContent = "❌ Игрок не создан. Смотри консоль (F12).";
-            return;
-        }
+        saveLocal();
+        updateAll();
+        
+        message.textContent = "✅ Гонщик создан (локально).";
+        console.log("💡 Игра работает в режиме LocalStorage. Данные сохранятся пока открыта вкладка.");
+        setTimeout(() => showScreen("mainMenu"), 600);
+
+    } catch (error) {
+        console.error("💥 Полный крах функции createAccount:", error);
+        message.textContent = "❌ Ошибка системы. Смотри консоль (F12).";
+    }
+}
+
 
         player = {
             id: created.id,
