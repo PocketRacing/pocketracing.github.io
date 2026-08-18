@@ -1,9 +1,3 @@
-/* ==========================================
-   POCKET RACING
-   game.js
-   Supabase + LocalStorage
-========================================== */
-
 let player = {
     id: null,
     name: "",
@@ -13,13 +7,11 @@ let player = {
     level: 1
 };
 
-let supabasePlayerId = null;
+/* ==============================
+   LOCAL STORAGE
+============================== */
 
-/* ==========================================
-   ЛОКАЛЬНОЕ СОХРАНЕНИЕ
-========================================== */
-
-function savePlayerLocal() {
+function saveLocal() {
 
     localStorage.setItem(
         "pocketRacingPlayer",
@@ -27,227 +19,250 @@ function savePlayerLocal() {
     );
 }
 
-/* ==========================================
-   ЛОКАЛЬНАЯ ЗАГРУЗКА
-========================================== */
+/* ==============================
+   SUPABASE — ПОИСК
+============================== */
 
-function loadPlayerLocal() {
+async function findPlayer(name) {
 
-    const saved =
-        localStorage.getItem(
-            "pocketRacingPlayer"
+    const { data, error } =
+        await supabase
+            .from("players")
+            .select(
+                "id, username, money, gold, experience, level"
+            )
+            .eq(
+                "username",
+                name
+            )
+            .maybeSingle();
+
+    if (error) {
+
+        console.error(
+            "Supabase ошибка:",
+            error
         );
 
-    if (!saved) {
-        return false;
+        return null;
     }
+
+    return data;
+}
+
+/* ==============================
+   SUPABASE — СОЗДАНИЕ
+============================== */
+
+async function createPlayer(name) {
+
+    const { data, error } =
+        await supabase
+            .from("players")
+            .insert({
+
+                username: name,
+                money: 1000,
+                gold: 0,
+                experience: 0,
+                level: 1
+
+            })
+            .select(
+                "id, username, money, gold, experience, level"
+            )
+            .single();
+
+    if (error) {
+
+        console.error(
+            "Ошибка создания:",
+            error
+        );
+
+        return null;
+    }
+
+    return data;
+}
+
+/* ==============================
+   СОЗДАНИЕ / ВХОД
+============================== */
+
+async function createAccount() {
+
+    const input =
+        document.getElementById(
+            "playerNameInput"
+        );
+
+    const message =
+        document.getElementById(
+            "accountMessage"
+        );
+
+    const name =
+        input.value.trim();
+
+    if (name.length < 2) {
+
+        message.textContent =
+            "⚠️ Введи имя минимум из 2 символов.";
+
+        return;
+    }
+
+    message.textContent =
+        "⏳ Подключаемся к базе...";
 
     try {
 
-        const data = JSON.parse(saved);
+        /*
+         * Сначала ищем игрока.
+         */
+
+        const existing =
+            await findPlayer(name);
+
+        /*
+         * Игрок уже есть.
+         */
+
+        if (existing) {
+
+            player = {
+
+                id: existing.id,
+
+                name: existing.username,
+
+                money:
+                    Number(existing.money),
+
+                gold:
+                    Number(existing.gold),
+
+                experience:
+                    Number(existing.experience),
+
+                level:
+                    Number(existing.level)
+
+            };
+
+            saveLocal();
+
+            updateAll();
+
+            message.textContent =
+                "✅ Игрок найден!";
+
+            setTimeout(
+                function() {
+
+                    showScreen(
+                        "mainMenu"
+                    );
+
+                },
+                300
+            );
+
+            return;
+        }
+
+        /*
+         * Игрока нет — создаём.
+         */
+
+        message.textContent =
+            "🏎️ Создаём гонщика...";
+
+        const created =
+            await createPlayer(name);
+
+        if (!created) {
+
+            message.textContent =
+                "❌ Игрок не создан. Смотри ошибку в консоли.";
+
+            return;
+        }
 
         player = {
-            id: data.id || null,
-            name: data.name || "",
-            money: Number(data.money) || 1000,
-            gold: Number(data.gold) || 0,
-            experience: Number(data.experience) || 0,
-            level: Number(data.level) || 1
+
+            id: created.id,
+
+            name: created.username,
+
+            money:
+                Number(created.money),
+
+            gold:
+                Number(created.gold),
+
+            experience:
+                Number(created.experience),
+
+            level:
+                Number(created.level)
+
         };
 
-        return true;
+        saveLocal();
+
+        updateAll();
+
+        message.textContent =
+            "✅ Гонщик создан!";
+
+        setTimeout(
+            function() {
+
+                showScreen(
+                    "mainMenu"
+                );
+
+            },
+            300
+        );
 
     } catch (error) {
 
         console.error(
-            "Ошибка локальной загрузки:",
-            error
-        );
-
-        return false;
-    }
-}
-
-/* ==========================================
-   SUPABASE — ПОИСК ИГРОКА
-========================================== */
-
-async function findPlayerInSupabase(name) {
-
-    if (
-        typeof supabase === "undefined"
-    ) {
-
-        console.error(
-            "Supabase не подключён."
-        );
-
-        return null;
-    }
-
-    const {
-        data,
-        error
-    } = await supabase
-        .from("players")
-        .select(
-            "id, username, money, gold, experience, level"
-        )
-        .eq(
-            "username",
-            name
-        )
-        .maybeSingle();
-
-    if (error) {
-
-        console.error(
-            "Ошибка поиска игрока:",
-            error
-        );
-
-        return null;
-    }
-
-    return data;
-}
-
-/* ==========================================
-   SUPABASE — СОЗДАНИЕ ИГРОКА
-========================================== */
-
-async function createPlayerInSupabase(name) {
-
-    if (
-        typeof supabase === "undefined"
-    ) {
-
-        console.error(
-            "Supabase не подключён."
-        );
-
-        return null;
-    }
-
-    const {
-        data,
-        error
-    } = await supabase
-        .from("players")
-        .insert({
-
-            username: name,
-
-            money: 1000,
-
-            gold: 0,
-
-            experience: 0,
-
-            level: 1
-
-        })
-        .select(
-            "id, username, money, gold, experience, level"
-        )
-        .single();
-
-    if (error) {
-
-        console.error(
-            "Ошибка создания игрока:",
-            error
-        );
-
-        return null;
-    }
-
-    return data;
-}
-
-/* ==========================================
-   SUPABASE — СОХРАНЕНИЕ ИГРОКА
-========================================== */
-
-async function savePlayerToSupabase() {
-
-    if (
-        typeof supabase === "undefined"
-    ) {
-        return;
-    }
-
-    if (!player.id) {
-        return;
-    }
-
-    const {
-        error
-    } = await supabase
-        .from("players")
-        .update({
-
-            username: player.name,
-
-            money: player.money,
-
-            gold: player.gold,
-
-            experience: player.experience,
-
-            level: player.level
-
-        })
-        .eq(
-            "id",
-            player.id
-        );
-
-    if (error) {
-
-        console.error(
-            "Ошибка сохранения игрока:",
-            error
-        );
-
-        return;
-    }
-
-    console.log(
-        "☁️ Игрок сохранён в Supabase"
+            "Критическая ошибка:","shop"
     );
+
+    updateShop();
 }
 
-/* ==========================================
-   ОБЩЕЕ СОХРАНЕНИЕ
-========================================== */
+function updateShop() {
 
-async function savePlayer() {
+    const money =
+        document.getElementById(
+            "shopMoney"
+        );
 
-    savePlayerLocal();
+    const gold =
+        document.getElementById(
+            "gold"
+        );
 
-    await savePlayerToSupabase();
+    if (money)
+        money.textContent =
+            player.money.toLocaleString(
+                "ru-RU"
+            );
+
+    if (gold)
+        gold.textContent =
+            player.gold.toLocaleString(
+                "ru-RU"
+            );
 }
 
-/* ==========================================
-   ЗАГРУЗКА BIG BOSS / ИГРОКА
-========================================== */
-
-async functionЗОЛОТА
-========================================== */
-
-async function buyGold(amount) {
-
-    amount =
-        Number(amount);
-
-    if (
-        !Number.isFinite(amount) ||
-        amount <= 0
-    ) {
-
-        return;
-    }
+function buyGold(amount) {
 
     const message =
         document.getElementById(
@@ -260,31 +275,24 @@ async function buyGold(amount) {
             "💳 Реальная оплата пока не подключена.";
 
     }
-
-    console.log(
-        "Тест покупки золота:",
-        amount
-    );
 }
 
-/* ==========================================
-   ОБНОВИТЬ ВСЁ
-========================================== */
+/* ==============================
+   ОБЩЕЕ ОБНОВЛЕНИЕ
+============================== */
 
 function updateAll() {
 
     updateMainMenu();
-
     updateGarage();
-
     updateProfile();
-
     updateShop();
+
 }
 
-/* ==========================================
+/* ==============================
    СООБЩЕНИЯ
-========================================== */
+============================== */
 
 function showMessage(text) {
 
@@ -293,11 +301,9 @@ function showMessage(text) {
             "message"
         );
 
-    if (message) {
-
+    if (message)
         message.textContent =
             text;
-    }
 }
 
 function showGarageMessage(text) {
@@ -307,27 +313,16 @@ function showGarageMessage(text) {
             "garageMessage"
         );
 
-    if (message) {
-
+    if (message)
         message.textContent =
             text;
-    }
 }
 
-/* ==========================================
-   СБРОС АККАУНТА
-========================================== */
+/* ==============================
+   СБРОС
+============================== */
 
-async function resetAccount() {
-
-    const confirmed =
-        confirm(
-            "⚠️ Сбросить локальный аккаунт? Данные в базе Supabase удаляться не будут."
-        );
-
-    if (!confirmed) {
-        return;
-    }
+function resetAccount() {
 
     localStorage.removeItem(
         "pocketRacingPlayer"
@@ -336,98 +331,117 @@ async function resetAccount() {
     player = {
 
         id: null,
-
         name: "",
-
         money: 1000,
-
         gold: 0,
-
         experience: 0,
-
         level: 1
+
     };
-
-    supabasePlayerId =
-        null;
-
-    showScreen(
-        "accountScreen"
-    );
 
     const input =
         document.getElementById(
             "playerNameInput"
         );
 
-    if (input) {
-
+    if (input)
         input.value = "";
-    }
 
-    const message =
-        document.getElementById(
-            "accountMessage"
-        );
-
-    if (message) {
-
-        message.textContent = "";
-    }
+    showScreen(
+        "accountScreen"
+    );
 }
 
-/* ==========================================
-   START RACE
-========================================== */
+/* ==============================
+   ГОНКА
+============================== */
 
 function startRace() {
-
-    if (
-        typeof window.startRaceGame ===
-        "function"
-    ) {
-
-        window.startRaceGame();
-
-        return;
-    }
 
     showScreen(
         "race"
     );
+
 }
 
-/* ==========================================
-   АВТОЗАГРУЗКА ЛОКАЛЬНОГО ПРОФИЛЯ
-========================================== */
+/* ==============================
+   СТАРТ
+============================== */
 
 document.addEventListener(
     "DOMContentLoaded",
     function() {
 
-        const loaded =
-            loadPlayerLocal();
+        console.log(
+            "🏎️ Pocket Racing запущен"
+        );
 
-        if (loaded && player.name) {
-
-            updateAll();
-
-            /*
-               Пока не отправляем
-               автоматически запрос в базу.
-               Игрок сможет ввести имя
-               на экране аккаунта.
-            */
-
-        }
+        console.log(
+            "Supabase:",
+            typeof supabase !== "undefined"
+        );
 
     }
-); loadPlayerF();
+); error
+        );
+
+        message.textContent =
+            "❌ Ошибка подключения к Supabase.";
+
+    }
 }
 
-/* ==========================================
-   ОБНОВЛЕНИЕ ГЛАВНОГО МЕНЮ
-========================================== */
+/* ==============================
+   ЭКРАНЫ
+============================== */
+
+function showScreen(id) {
+
+    document
+        .querySelectorAll(".screen")
+        .forEach(
+            function(screen) {
+
+                screen.classList.add(
+                    "hidden"
+                );
+
+            }
+        );
+
+    const screen =
+        document.getElementById(id);
+
+    if (screen) {
+
+        screen.classList.remove(
+            "hidden"
+        );
+
+    }
+}
+
+/* ==============================
+   МЕНЮ
+============================== */
+
+function openMainMenu() {
+
+    updateAll();
+
+    showScreen(
+        "mainMenu"
+    );
+}
+
+function backToMenu() {
+
+    openMainMenu();
+}
+
+/* ==============================
+   ОБНОВЛЕНИЕ МЕНЮ
+============================== */
 
 function updateMainMenu() {
 
@@ -451,40 +465,32 @@ function updateMainMenu() {
             "menuXP"
         );
 
-    if (name) {
-
+    if (name)
         name.textContent =
             player.name;
-    }
 
-    if (money) {
-
+    if (money)
         money.textContent =
             player.money.toLocaleString(
                 "ru-RU"
             );
-    }
 
-    if (gold) {
-
+    if (gold)
         gold.textContent =
             player.gold.toLocaleString(
                 "ru-RU"
             );
-    }
 
-    if (xp) {
-
+    if (xp)
         xp.textContent =
             player.experience.toLocaleString(
                 "ru-RU"
             );
-    }
 }
 
-/* ==========================================
+/* ==============================
    ГАРАЖ
-========================================== */
+============================== */
 
 function openGarage() {
 
@@ -522,46 +528,36 @@ function updateGarage() {
             "playerLevel"
         );
 
-    if (name) {
-
+    if (name)
         name.textContent =
             player.name;
-    }
 
-    if (money) {
-
+    if (money)
         money.textContent =
             player.money.toLocaleString(
                 "ru-RU"
             );
-    }
 
-    if (gold) {
-
+    if (gold)
         gold.textContent =
             player.gold.toLocaleString(
                 "ru-RU"
             );
-    }
 
-    if (xp) {
-
+    if (xp)
         xp.textContent =
             player.experience.toLocaleString(
                 "ru-RU"
             );
-    }
 
-    if (level) {
-
+    if (level)
         level.textContent =
             player.level;
-    }
 }
 
-/* ==========================================
+/* ==============================
    ПРОФИЛЬ
-========================================== */
+============================== */
 
 function openProfile() {
 
@@ -599,84 +595,37 @@ function updateProfile() {
             "profileGold"
         );
 
-    if (name) {
-
+    if (name)
         name.textContent =
             player.name;
-    }
 
-    if (level) {
-
+    if (level)
         level.textContent =
             player.level;
-    }
 
-    if (xp) {
-
+    if (xp)
         xp.textContent =
             player.experience.toLocaleString(
                 "ru-RU"
             );
-    }
 
-    if (money) {
-
+    if (money)
         money.textContent =
             player.money.toLocaleString(
                 "ru-RU"
             );
-    }
 
-    if (gold) {
-
+    if (gold)
         gold.textContent =
             player.gold.toLocaleString(
                 "ru-RU"
             );
-    }
 }
 
-/* ==========================================
+/* ==============================
    МАГАЗИН
-========================================== */
+============================== */
 
 function openShop() {
 
     showScreen(
-        "shop"
-    );
-
-    updateShop();
-}
-
-function updateShop() {
-
-    const money =
-        document.getElementById(
-            "shopMoney"
-        );
-
-    const gold =
-        document.getElementById(
-            "gold"
-        );
-
-    if (money) {
-
-        money.textContent =
-            player.money.toLocaleString(
-                "ru-RU"
-            );
-    }
-
-    if (gold) {
-
-        gold.textContent =
-            player.gold.toLocaleString(
-                "ru-RU"
-            );
-    }
-}
-
-/* ==========================================
-   ПОКУПКА
