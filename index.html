@@ -390,47 +390,23 @@ P:
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
-        const SUPABASE_URL = "https://qyjvkiusyiylckaujjiv.supabase.co";
 
-        const SUPABASE_KEY = "sb_publishable_dwxrSiVkIY5C8PKu--_UlA_phF5hvRy";
+        const SUPABASE_URL =
+            "https://qyjvkiusyiylckaujjiv.supabase.co";
 
-        const supabase = window.supabase.createClient(
-            SUPABASE_URL,
-            SUPABASE_KEY
+        const SUPABASE_KEY =
+            "ТВОЙ_PUBLISHABLE_KEY";
+
+        const supabase =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+        console.log(
+            "✅ Supabase подключён"
         );
 
-        console.log("=== SUPABASE ===");
-        console.log("Supabase подключён!");
-
-        async function testSupabase() {
-
-            console.log("Проверяем игрока Big Boss...");
-
-            const { data, error } = await supabase
-                .from("players")
-                .select("username, money, gold, experience, level")
-                .eq("username", "Big Boss")
-                .single();
-
-            if (error) {
-
-                console.error(ибка Supabase:",
-                    error
-                );
-
-                return;
-            }
-
-            console.log("✅ Игрок найден!");
-            console.log("👤 Ник:", data.username);
-            console.log("💰 Деньги:", data.money);
-            console.log("💎 Золото:", data.gold);
-            console.log("⭐ Опыт:", data.experience);
-            console.log("🏆 Уровень:", data.level);
-            console.log("Полные данные:", data);
-        }
-
-        testSupabase();
     </script>
 
     <!-- ИГРОВЫЕ СКРИПТЫ -->
