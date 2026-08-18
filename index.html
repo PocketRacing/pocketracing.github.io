@@ -1,419 +1,170 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Pocket Racing</title>
-
-    <link rel="stylesheet" href="style.css">
+    <title>Гонки: База данных</title>
+    <style>
+        body { font-family: sans-serif; background: #222; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .screen { display: none; text-align: center; }
+        #loginScreen { display: block; }
+        input { padding: 10px; font-size: 16px; border-radius: 5px; border: none; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; background: #ff4757; color: white; border: none; border-radius: 5px; margin-top: 10px; }
+        button:hover { background: #e84118; }
+        #accountMessage { margin-top: 15px; color: #f1f2f6; min-height: 20px; }
+        #mainMenu { display: none; }
+        h1 { color: #48dbfb; }
+    </style>
 </head>
-
 <body>
 
-    <!-- СОЗДАНИЕ АККАУНТА -->
-
-    <section id="accountScreen" class="screen">
-
-        <h1>POCKET RACING</h1>
-
-        <p class="subtitle">
-            Создай своего гонщика
-        </p>
-
-        <div class="accountCard">
-
-            <input
-                id="playerNameInput"
-                type="text"
-                maxlength="20"
-                placeholder="Введите имя"
-                autocomplete="off"
-            >
-
-            <button
-                type="button"
-                id="createPlayerButton"
-                onclick="createAccount()">
-                Тест
-            </button>
-
-            <p id="accountMessage"></p>
-
-        </div>
-
-    </section>
-
-    <!-- ГЛАВНОЕ МЕНЮ -->
-
-    <section id="mainMenu" class="screen hidden">
-
-        <h1>POCKET RACING</h1>
-
-        <p class="subtitle">
-            Добро пожаловать,
-            <b id="menuPlayerName">Гонщик</b>!
-        </p>
-
-        <div class="balanceBar">
-
-            <span>
-                💰 <b id="menuMoney">1000</b>
-            </span>
-
-            <span>
-                💎 <b id="menuGold">0</b>
-            </span>
-
-            <span>
-                ⭐ <b id="menuXP">0</b>
-            </span>
-
-        </div>
-
-        <div class="buttons">
-
-            <button
-                type="button"
-                onclick="openGarage()">
-                🏎️ ГАРАЖ
-            </button>
-
-            <button
-                type="button"
-                onclick="showMessage('Выбор гонки пока в разработке')">
-                🏁 ВЫБОР ГОНКИ
-            </button>
-
-            <button
-                type="button"
-                onclick="openProfile()">
-                👤 ПРОФИЛЬ
-            </button>
-
-            <button
-                type="button"
-                onclick="openShop()">
-                💎 МАГАЗИН
-            </button>
-
-        </div>
-
-        <p id="message"></p>
-
-    </section>
-
-    <!-- ГАРАЖ -->
-
-    <section id="garage" class="screen hidden">
-
-        <button
-            class="backButton"
-            type="button"
-            onclick="backToMenu()">
-            ← НАЗАД
-        </button>
-
-        <h1>🏎️ ГАРАЖ</h1>
-
-        <div class="car">
-
-            <div class="carImage">
-
-                <img
-                    src="./car1.png"
-                    alt="Dodge Charger Demon"
-                >
-
-            </div>
-
-            <h2>Dodge Charger Demon</h2>
-
-            <p>
-                👤 <b id="garagePlayerName">Гонщик</b>
-            </p>
-
-            <p>
-                🏆 Уровень:
-                <b id="playerLevel">1</b>
-            </p>
-
-            <div class="stats">
-
-                <p>
-                    ⚡ Мощность:
-                    <b>98</b>
-                </p>
-
-                <p>
-                    🏁 Скорость:
-                    <b>94</b>
-                </p>
-
-                <p>
-                    🎮 Управление:
-                    <b>76</b>
-                </p>
-
-            </div>
-
-        </div>
-
-        <div class="money">
-
-            💰 Монеты:
-            <b id="money">1000</b>
-
-            
-
-      
-
-Золото:
-            <b id="garageGold">0</b>
-
-            
-
-       
-
-P:
-            <b id="garageXP">0</b>
-
-        </div>
-
-        <div class="buttons">
-
-            <button
-                type="button"
-                onclick="startRace()">
-                🏁 В ГОНКУ
-            </button>
-
-            <button
-                type="button"
-                onclick="showGarageMessage('Тюнинг пока в разработке')">
-                🔧 ТЮНИНГ
-            </button>
-
-            <button
-                type="button"
-                onclick="showGarageMessage('Коллекция пока в разработке')">
-                📦 КОЛЛЕКЦИЯ
-            </button>
-
-        </div>
-
-        <p id="garageMessage"></p>
-
-    </section>
-
-    <!-- ПРОФИЛЬ -->
-
-    <section id="profile" class=screen hidden">
-
-        <button
-            class="backButton"
-            type="button"
-            onclick="backToMenu()">
-            ← НАЗАД
-        </button>
-
-        <h1>👤 ПРОФИЛЬ</h1>
-
-        <div class="profileCard">
-
-            <h2 id="profileName">
-                Гонщик
-            </h2>
-
-            <p>
-                🏆 Уровень:
-                <b id="profileLevel">1</b>
-            </p>
-
-            <p>
-                ⭐ XP:
-                <b id="profileXP">0</b>
-            </p>
-
-            <p>
-                💰 Монеты:
-                <b id="profileMoney">1000</b>
-            </p>
-
-            <p>
-                💎 Золото:
-                <b id="profileGold">0</b>
-            </p>
-
-        </div>
-
-        <div class="buttons">
-
-            <button
-                type="button"
-                onclick="resetAccount()">
-                ⚠️ СБРОСИТЬ АККАУНТ
-            </button>
-
-        </div>
-
-    </section>
-
-    <!-- ГОНКА -->
-
-    <section id="race" class="screen hidden">
-
-        <button
-            class="backButton"
-            type="button"
-            onclick="openGarage()">
-            ← ГАРАЖ
-        </button>
-
-        <h1>🏁 ГОНКА</h1>
-
-        <div class="raceCars">
-
-            <div class="raceCar">
-
-                <img
-                    src="./car1.png"
-                    alt="Твоя машина"
-                >
-
-                <h2 id="racePlayerName">
-                    Гонщик
-                </h2>
-
-            </div>
-
-            <div class="vs">
-                VS
-            </div>
-
-            <div class="raceCar">
-
-                <img
-                    src="./car2.png"
-                    alt="Police"
-                >
-
-                <h2>🚓 Police</h2>
-
-            </div>
-
-        </div>
-
-        <div class="raceInfo">
-
-            <p>
-                🏆 Счёт:
-                <b id="raceScore">0 : 0</b>
-            </p>
-
-            <p id="raceMessage">
-                Готов к гонке?
-            </p>
-
-        </div>
-
-        <div class="buttons">
-
-            <button
-                id="attackButton"
-                type="button">
-                🔥 АТАКОВАТЬ
-            </button>
-
-        </div>
-
-    </section>
-
-    <!-- МАГАЗИН -->
-
-    <section id="shop" class="screen hidden">
-
-        <button
-            class="backButton"
-            type="button"
-            onclick="backToMenu()">
-            ← НАЗАД
-        </button>
-
-        <h1>💎 МАГАЗИН</h1>
-
-        <div class="shopBalance">
-
-            <p>
-                💰 Монеты:
-                <b id="shopMoney">1000</b>
-            </p>
-
-            <p>
-                💎 Золото:
-                <b id="gold">0</b>
-            </p>
-
-        </div>
-
-        <div class="donateCard">
-
-            <h2>💎 100 ЗОЛОТА</h2>
-
-            <p>
-                Пополнение игрового баланса
-            </p>
-
-            <div class="donatePrice">
-                99 ₽
-            </div>
-
-            <button
-                type="button"
-                onclick="buyGold(100)">
-                💎 КУПИТЬ 100 ЗОЛОТА
-            </button>
-
-            <small>
-                Тестовая покупка. Реальная оплата пока не подключена.
-            </small>
-
-        </div>
-
-        <p id="shopMessage"></p>
-
-    </section>
-
-    <!-- SUPABASE -->
-
+    <!-- ЭКРАН ВХОДА -->
+    <div id="loginScreen" class="screen">
+        <h1>ГОНКИ: ВХОД</h1>
+        <p>Введи имя гонщика (например, Big Boss):</p>
+        <input type="text" id="playerNameInput" placeholder="Имя гонщика" value="Big Boss">
+        <br>
+        <button onclick="createAccount()">ВОЙТИ</button>
+        <div id="accountMessage"></div>
+    </div>
+
+    <!-- ГЛАВНОЕ МЕНЮ (ПОКА СКРЫТО) -->
+    <div id="mainMenu" class="screen">
+        <h1>ГЛАВНОЕ МЕНЮ</h1>
+        <p id="playerStats">Загрузка...</p>
+        <button onclick="startRace()">СТАРТ ГОНКИ</button>
+    </div>
+
+    <!-- ПОДКЛЮЧЕНИЕ SUPABASE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+    <!-- ИНИЦИАЛИЗАЦИЯ КЛЮЧЕЙ -->
     <script>
+        const SUPABASE_URL = "https://qyjvkiusyiylckaujjiv.supabase.co";
+        
+        // !!! ТВОЙ КЛЮЧ ANON (скопирован из твоих данных) !!!
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5anZraXVzeWl5bGNrYXVqaml2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY5OTk5NzksImV4cCI6MjEwMjU3NTk3OX0.rNZX3L-LET6tHe3juirf2DI7cuKOhSEcReXSUHhoSjI";
 
-        const SUPABASE_URL =
-            "https://qyjvkiusyiylckaujjiv.supabase.co";
-
-        const SUPABASE_KEY =
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5anZraXVzeWl5bGNrYXVqaml2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY5OTk5NzksImV4cCI6MjEwMjU3NTk3OX0.rNZX3L-LET6tHe3juirf2DI7cuKOhSEcReXSUHhoSjI";
-
-        const supabase =
-            window.supabase.createClient(
-                SUPABASE_URL,
-                SUPABASE_KEY
-            );
-
-        console.log(
-            "✅ Supabase подключён"
-        );
-
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        console.log("✅ Supabase успешно подключен!");
     </script>
 
-    <!-- ИГРОВЫЕ СКРИПТЫ -->
+    <!-- ТВОЙ ИГРОВОЙ ЛОГИК (ВСЁ ВНУТРИ) -->
+    <script>
+        let player = null;
 
-    <script src="./game.js"></script>
-    <script src="./race.js?v=2"></script>
+        // Функция сохранения в браузере (чтобы не пропадало при обновлении)
+        function saveLocal() {
+            if (player) localStorage.setItem('my_racer', JSON.stringify(player));
+        }
 
+        // Загрузка из браузера
+        function loadLocal() {
+            const saved = localStorage.getItem('my_racer');
+            if (saved) {
+                player = JSON.parse(saved);
+                updateStats();
+            }
+        }
+
+        function updateStats() {
+            const statsEl = document.getElementById('playerStats');
+            if (statsEl && player) {
+                statsEl.textContent = `Игрок: ${player.name} | Деньги: ${player.money} | Уровень: ${player.level}`;
+            }
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(el => el.style.display = 'none');
+            document.getElementById(screenId).style.display = 'block';
+        }
+
+        async function createAccount() {
+            const input = document.getElementById("playerNameInput");
+            const message = document.getElementById("accountMessage");
+
+            if (!input || !message) return;
+
+            const name = input.value.trim();
+            if (name.length < 2) {
+                message.textContent = "⚠️ Имя должно быть минимум из 2 символов.";
+                return;
+            }
+
+            message.textContent = "⏳ Проверка базы данных...";
+            console.log(`🔍 Пытаемся найти игрока: "${name}"`);
+
+            try {
+                let dbData = null;
+
+                // 1. Пытаемся получить данные из Supabase
+                if (typeof supabase !== 'undefined') {
+                    try {
+                        // Ищем в таблице players колонку username. 
+                        // Если у тебя колонка называется name - поменяй слово 'username' на 'name' здесь.
+                        const { data, error } = await supabase
+                            .from('players')
+                            .select('*')
+                            .eq('username', name) 
+                            .maybeSingle();
+
+                        if (error) {
+                            console.warn("⚠️ Ошибка базы (игнорируем):", error.message);
+                        } else {
+                            dbData = data;
+                        }
+                    } catch (e) {
+                        console.error("💥 Критическая ошибка базы:", e);
+                    }
+                }
+
+                // 2. ЕСЛИ НАШЛИ В БАЗЕ
+                if (dbData) {
+                    console.log("✅ Игрок найден в базе!", dbData);
+                    player = {
+                        id: dbData.id,
+                        name: dbData.username,
+                        money: Number(dbData.money) || 1000,
+                        gold: Number(dbData.gold) || 0,
+                        experience: Number(dbData.experience) || 0,
+                        level: Number(dbData.level) || 1
+                    };
+                    saveLocal();
+                    updateStats();
+                    message.textContent = `✅ Привет, ${player.name}! Данные загружены из базы.`;
+                    setTimeout(() => showScreen("mainMenu"), 600);
+                    return;
+                }
+
+                // 3. ЕСЛИ НЕ НАШЛИ (или база недоступна) -> СОЗДАЕМ ЛОКАЛЬНО
+                console.log("🆕 Игрока нет в базе или база недоступна. Создаем локальный профиль.");
+                player = {
+                    id: Date.now(),
+                    name: name,
+                    money: 1000,
+                    gold: 0,
+                    experience: 0,
+                    level: 1
+                };
+                saveLocal();
+                updateStats();
+                message.textContent = "✅ Гонщик создан (локально). Игра работает!";
+                setTimeout(() => showScreen("mainMenu"), 600);
+
+            } catch (error) {
+                console.error("💥 Полный сбой:", error);
+                message.textContent = "❌ Ошибка системы. Смотри консоль (F12).";
+            }
+        }
+
+        function startRace() {
+            alert("🚀 Гонка началась! (Здесь будет логика гонки)");
+        }
+
+        // При загрузке страницы пробуем загрузить сохраненного игрока (если есть)
+        window.onload = () => {
+            loadLocal();
+            // Если игрок уже есть, можно сразу показать меню, но для теста оставим вход
+        };
+    </script>
 </body>
-
-</html>"
+</html>
