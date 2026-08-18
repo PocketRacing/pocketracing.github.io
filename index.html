@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Гонки: Big Boss (Локальная версия)</title>
+    <title>Гонки: Big Boss</title>
     <style>
         body { 
             font-family: 'Segoe UI', sans-serif; 
@@ -54,10 +54,13 @@
         .car {
             position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
             width: 60px; height: 80px; background: red;
+            /* clip-path для формы машины */
             clip-path: polygon(0 20%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%);
-            box-shadow: 0 0 10px white; transition: bottom 2s linear;
+            box-shadow: 0 0 10px white;
+            /* Убрал transition здесь, будем двигать через JS для контроля скорости */
         }
-        #carElement { bottom: 10px !important; }
+        /* УДАЛЕНО: #carElement { bottom: 10px !important; } */
+        
         .race-controls { margin-top: 20px; display: flex; gap: 15px; }
         .race-btn {
             padding: 15px 30px; font-size: 18px; background: #00d2d3;
@@ -104,21 +107,25 @@
         </div>
     </div>
 
+    <!-- Скрипты подключаем В КОНЦЕ body -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-    const SUPABASE_URL = "https://qyjvkiusyiylckaujjiv.supabase.co";
-
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5anZraXVzeWl5bGNrYXVqaml2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY5OTk5NzksImV4cCI6MjEwMjU3NTk3OX0.rNZX3L-LET6tHe3juirf2DI7cuKOhSEcReXSUHhoSjI";
-
-    const supabase = window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
-
-    console.log("✅ Supabase подключён");
-</script>
+    
+    <script>
+        // --- НАСТРОЙКИ ---
+        const SUPABASE_URL = "https://qyjvkiusyiylckaujjiv.supabase.co";
+        // ВНИМАНИЕ: Никогда не храни ключи в публичном коде. Здесь заглушка.
+        const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF5anZraXVzeWl5bGNrYXVqaml2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY5OTk5NzksImV4cCI6MjEwMjU3NTk3OX0.rNZX3L-LET6tHe3juirf2DI7cuKOhSEcReXSUHhoSjI"; 
         
+        let supabase = null;
+        
+        // Инициализация Supabase (если ключ есть)
+        if (SUPABASE_KEY !== "YOUR_ANON_KEY_HERE") {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            console.log("✅ Supabase подключён");
+        } else {
+            console.warn("⚠️ Supabase не подключен (нет ключа). Работает только локальное сохранение.");
+        }
+
         let player = null;
 
         function saveLocal() {
@@ -148,11 +155,11 @@
 
         function showScreen(screenId) {
             document.querySelectorAll('.screen').forEach(el => el.style.display = 'none');
-            document.getElementById(screenId).style.display = 'block';
+            const screen = document.getElementById(screenId);
+            if(screen) screen.style.display = 'block';
         }
 
         async function createAccount() {
-            // Убрали всю логику Supabase, чтобы кнопка точно работала
             const input = document.getElementById("playerNameInput");
             const message = document.getElementById("accountMessage");
 
@@ -166,12 +173,10 @@
 
             message.textContent = "⏳ Создание профиля...";
             
-            // ЛОКАЛЬНОЕ СОЗДАНИЕ (гарантированно работает)
-            console.log("🆕 Создаем локальный профиль с 50к!");
             player = {
                 id: Date.now(),
                 name: name,
-                money: 50000,   // <-- БАЛАНС 50 000
+                money: 50000,   
                 gold: 100,
                 experience: 0,
                 level: 1
@@ -196,7 +201,8 @@
             showScreen('raceScreen');
             const statusEl = document.getElementById('raceStatus');
             statusEl.textContent = "На старт...";
-            document.getElementById('raceBtn').disabled = true;
+            const raceBtn = document.getElementById('raceBtn');
+            if(raceBtn) raceBtn.disabled = true;
 
             setTimeout(() => {
                 statusEl.textContent = "Внимание...";
@@ -204,7 +210,11 @@
                     statusEl.textContent = "МАРШ! 🏁";
                     
                     const car = document.getElementById('carElement');
-                    car.style.bottom = '400px'; // Машина едет вверх
+                    if (!car) return;
+
+                    // Анимация машины: меняем bottom через JS
+                    car.style.transition = 'bottom 2.5s linear'; // Плавно едем вверх
+                    car.style.bottom = '400px'; 
                     
                     setTimeout(() => {
                         const winChance = Math.random(); 
@@ -220,22 +230,23 @@
                             statusEl.style.color = "#ff4757";
                         }
 
-                        player.money -= cost; // Плата за участие
+                        player.money -= cost; 
                         saveLocal();
                         updateStatsUI();
 
                         setTimeout(() => {
                             showScreen('mainMenu');
-                            document.getElementById('raceBtn').disabled = false;
+                            if(raceBtn) raceBtn.disabled = false;
                         }, 2000);
-                    }, 2500); // Время гонки
+                    }, 2500); 
                 }, 1000);
             }, 1000);
         }
 
         function cancelRace() {
             showScreen('mainMenu');
-            document.getElementById('raceBtn').disabled = false;
+            const btn = document.getElementById('raceBtn');
+            if(btn) btn.disabled = false;
         }
 
         window.onload = loadLocal;
