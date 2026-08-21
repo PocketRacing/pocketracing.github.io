@@ -1,135 +1,2548 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>Гараж: Вход</title>
-    <!-- Подключаем библиотеку Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #1a1a1a;
-            color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .container {
-            text-align: center;
-            background: #2d2d2d;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            max-width: 400px;
-        }
-        input {
-            padding: 12px;
-            width: 80%;
-            margin-bottom: 15px;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            outline: none;
-        }
-        button {
-            padding: 12px 24px;
-            background-color: #ff4757;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-        button:hover {
-            background-color: #e84118;
-        }
-        #status-message {
-            margin-top: 20px;
-            font-weight: bold;
-            min-height: 24px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>Pocket Racer</title>
+
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial,sans-serif;background:#080b10;color:#fff}
+button{font:inherit;border:0;cursor:pointer}
+#app{width:100%;height:100%;position:relative;background:#080b10}
+.screen{display:none;width:100%;height:100%;position:absolute;inset:0}
+.screen.active{display:block}
+
+/* ================= MENU ================= */
+
+#menu{
+    background:
+    radial-gradient(circle at 50% 30%,#263b50 0,#101923 45%,#05070a 100%);
+}
+
+.topbar{
+    position:absolute;
+    left:0;right:0;top:0;
+    height:72px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:10px 18px;
+    background:rgba(0,0,0,.45);
+    backdrop-filter:blur(10px);
+    z-index:20;
+}
+
+.logo{
+    font-size:26px;
+    font-weight:900;
+    letter-spacing:2px;
+    color:#fff;
+    text-shadow:0 3px 15px #000;
+}
+
+.currency{
+    display:flex;
+    gap:8px;
+}
+
+.money{
+    min-width:110px;
+    padding:10px 14px;
+    border-radius:12px;
+    background:rgba(255,255,255,.09);
+    border:1px solid rgba(255,255,255,.12);
+    text-align:center;
+    font-weight:bold;
+}
+
+.menu-content{
+    width:min(1100px,94%);
+    height:100%;
+    margin:auto;
+    padding-top:100px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.hero{
+    width:min(850px,100%);
+    text-align:center;
+}
+
+.hero h1{
+    margin:0;
+    font-size:clamp(42px,9vw,92px);
+    letter-spacing:5px;
+    text-transform:uppercase;
+    text-shadow:0 8px 30px #000;
+}
+
+.hero p{
+    color:#aab7c4;
+    font-size:18px;
+}
+
+.main-buttons{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+    margin-top:35px;
+}
+
+.btn{
+    padding:17px 15px;
+    border-radius:15px;
+    color:#fff;
+    background:linear-gradient(135deg,#ef3340,#a50f19);
+    box-shadow:0 8px 25px rgba(0,0,0,.35);
+    font-weight:900;
+    transition:.15s;
+}
+
+.btn:hover{transform:translateY(-2px);filter:brightness(1.12)}
+.btn.secondary{background:linear-gradient(135deg,#34495e,#17212c)}
+.btn.gold{background:linear-gradient(135deg,#e7b62c,#8d6205);color:#17110a}
+.btn.green{background:linear-gradient(135deg,#1db954,#08772f)}
+
+.quick{
+    margin-top:16px;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+}
+
+.quick button{
+    padding:13px;
+    border-radius:12px;
+    background:#131b24;
+    color:#fff;
+    border:1px solid #283644;
+}
+
+/* ================= PANELS ================= */
+
+.panel{
+    width:100%;
+    height:100%;
+    overflow:auto;
+    padding:90px 18px 30px;
+    background:
+    radial-gradient(circle at top,#182532,#07090c 70%);
+}
+
+.panel-inner{
+    max-width:1100px;
+    margin:auto;
+}
+
+.panel-title{
+    font-size:38px;
+    margin:0 0 8px;
+}
+
+.panel-subtitle{
+    color:#91a0ad;
+    margin-bottom:25px;
+}
+
+.back{
+    position:absolute;
+    top:15px;
+    left:15px;
+    z-index:30;
+    background:#151e27;
+    color:#fff;
+    padding:11px 18px;
+    border-radius:11px;
+}
+
+/* ================= GARAGE ================= */
+
+.car-preview{
+    min-height:300px;
+    border-radius:22px;
+    background:
+    linear-gradient(180deg,rgba(255,255,255,.04),rgba(0,0,0,.35)),
+    radial-gradient(circle,#27394b,#0b1016);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    position:relative;
+    overflow:hidden;
+    margin-bottom:18px;
+}
+
+.car-preview img{
+    width:min(550px,90%);
+    max-height:280px;
+    object-fit:contain;
+    filter:drop-shadow(0 25px 20px rgba(0,0,0,.7));
+}
+
+.car-placeholder{
+    width:260px;
+    height:100px;
+    border-radius:55% 45% 25% 25%;
+    background:linear-gradient(135deg,#ed3340,#7e0e18);
+    position:relative;
+    box-shadow:0 25px 35px #000;
+}
+
+.car-placeholder:before{
+    content:"";
+    position:absolute;
+    width:110px;
+    height:45px;
+    left:75px;
+    top:-25px;
+    border-radius:70px 70px 5px 5px;
+    background:#111c25;
+}
+
+.wheels{
+    position:absolute;
+    bottom:-18px;
+    left:30px;
+    right:30px;
+    display:flex;
+    justify-content:space-between;
+}
+
+.wheel{
+    width:45px;height:45px;
+    border-radius:50%;
+    background:#050505;
+    border:7px solid #30343a;
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+    margin-bottom:18px;
+}
+
+.stat{
+    background:#111922;
+    padding:14px;
+    border-radius:13px;
+    border:1px solid #202e3b;
+}
+
+.stat b{display:block;font-size:20px}
+.stat span{font-size:12px;color:#83919d}
+
+.progress{
+    height:8px;
+    border-radius:10px;
+    background:#252d35;
+    overflow:hidden;
+    margin-top:8px;
+}
+
+.progress i{
+    display:block;
+    height:100%;
+    background:linear-gradient(90deg,#ef3340,#ffb300);
+}
+
+/* ================= CARDS ================= */
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+    gap:14px;
+}
+
+.card{
+    background:linear-gradient(145deg,#151f29,#0d1319);
+    border:1px solid #24313d;
+    border-radius:17px;
+    padding:16px;
+}
+
+.card h3{margin:5px 0}
+.card p{color:#82909d;font-size:14px}
+
+.card-img{
+    height:130px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.card-img img{
+    max-width:100%;
+    max-height:120px;
+    object-fit:contain;
+}
+
+.locked{opacity:.45;filter:grayscale(1)}
+
+.price{
+    font-size:20px;
+    font-weight:bold;
+    margin:10px 0;
+}
+
+/* ================= MAP ================= */
+
+.map{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+    gap:15px;
+}
+
+.location{
+    min-height:190px;
+    border-radius:20px;
+    padding:20px;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
+    background:
+    linear-gradient(180deg,transparent,rgba(0,0,0,.85)),
+    #1d2b38;
+    border:1px solid #344653;
+    overflow:hidden;
+    position:relative;
+}
+
+.location:nth-child(2){background:linear-gradient(180deg,transparent,rgba(0,0,0,.9)),#594a32}
+.location:nth-child(3){background:linear-gradient(180deg,transparent,rgba(0,0,0,.9)),#314d35}
+.location:nth-child(4){background:linear-gradient(180deg,transparent,rgba(0,0,0,.9)),#456078}
+.location:nth-child(5){background:linear-gradient(180deg,transparent,rgba(0,0,0,.9)),#293038}
+
+.location h3{margin:0;font-size:24px}
+.location p{margin:5px 0;color:#bdc7cf}
+
+/* ================= RACE ================= */
+
+#race{
+    background:#111;
+}
+
+#raceCanvas{
+    width:100%;
+    height:100%;
+    display:block;
+}
+
+.race-ui{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+}
+
+.race-top{
+    position:absolute;
+    top:15px;
+    left:15px;
+    right:15px;
+    display:flex;
+    justify-content:space-between;
+}
+
+.race-box{
+    background:rgba(0,0,0,.55);
+    border:1px solid rgba(255,255,255,.15);
+    padding:10px 14px;
+    border-radius:12px;
+    backdrop-filter:blur(7px);
+}
+
+#countdown{
+    position:absolute;
+    left:50%;
+    top:45%;
+    transform:translate(-50%,-50%);
+    font-size:90px;
+    font-weight:900;
+    text-shadow:0 8px 30px #000;
+}
+
+.controls{
+    position:absolute;
+    bottom:20px;
+    left:20px;
+    right:20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    pointer-events:auto;
+}
+
+.control-group{
+    display:flex;
+    gap:12px;
+}
+
+.control{
+    width:72px;
+    height:72px;
+    border-radius:50%;
+    background:rgba(0,0,0,.6);
+    color:#fff;
+    border:2px solid rgba(255,255,255,.18);
+    font-size:28px;
+    user-select:none;
+    touch-action:none;
+}
+
+.nitro{
+    width:100px;
+    height:100px;
+    border-radius:50%;
+    background:linear-gradient(135deg,#ff3b30,#8d0010);
+    font-size:18px;
+    font-weight:900;
+}
+
+#raceResult{
+    position:absolute;
+    inset:0;
+    display:none;
+    background:rgba(0,0,0,.78);
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    z-index:50;
+}
+
+.result-box{
+    width:min(430px,90%);
+    padding:35px;
+    border-radius:25px;
+    background:#101820;
+    border:1px solid #344653;
+}
+
+.result-box h2{font-size:40px;margin:0 0 10px}
+
+/* ================= TOAST ================= */
+
+#toast{
+    position:fixed;
+    left:50%;
+    bottom:25px;
+    transform:translate(-50%,100px);
+    background:#101820;
+    border:1px solid #344653;
+    padding:14px 20px;
+    border-radius:13px;
+    z-index:999;
+    transition:.25s;
+    box-shadow:0 10px 35px #000;
+}
+
+#toast.show{transform:translate(-50%,0)}
+
+/* ================= MOBILE ================= */
+
+@media(max-width:700px){
+    .main-buttons{grid-template-columns:1fr 1fr}
+    .quick{grid-template-columns:1fr 1fr}
+    .stats{grid-template-columns:1fr 1fr}
+    .hero h1{font-size:45px}
+    .topbar{height:60px}
+    .money{min-width:80px;padding:8px;font-size:13px}
+    .logo{font-size:18px}
+    .panel{padding-top:75px}
+}
+</style>
 </head>
+
 <body>
 
-    <div class="container">
-        <h2>🏁 Гараж Гонщика</h2>
-        <p>Введи своё имя, чтобы начать игру!</p>
-        
-        <input type="text" id="player-name" placeholder="Например: Turbo">
-        <button onclick="createAccount()">Войти в гараж</button>
-        <div id="status-message"></div>
+<div id="app">
+
+<!-- ================= MENU ================= -->
+
+<section id="menu" class="screen active">
+
+<div class="topbar">
+    <div class="logo">POCKET RACER</div>
+
+    <div class="currency">
+        <div class="money">💰 <span id="menuMoney">50000</span></div>
+        <div class="money">💎 <span id="menuGold">250</span></div>
+    </div>
+</div>
+
+<div class="menu-content">
+<div class="hero">
+
+    <h1>POCKET<br>RACER</h1>
+    <p>Городские гонки начинаются здесь.</p>
+
+    <div class="main-buttons">
+        <button class="btn" onclick="openRace()">🏁 ГОНОКА</button>
+        <button class="btn secondary" onclick="openScreen('map')">🌍 КАРТА</button>
+        <button class="btn gold" onclick="openScreen('tournament')">🏆 ТУРНИР</button>
+        <button class="btn secondary" onclick="openScreen('garage')">🚗 ГАРАЖ</button>
+        <button class="btn secondary" onclick="openScreen('collection')">🏆 КОЛЛЕКЦИЯ</button>
+        <button class="btn secondary" onclick="openScreen('shop')">🛒 МАГАЗИН</button>
     </div>
 
-    <script>
-        // 1. Твои ключи
-        const SUPABASE_URL = 'https://qyjvkiusyiylckaujjiv.supabase.co/rest/v1/players_new'; 
-        const SUPABASE_ANON_KEY = 'sb_publishable_dwxrSiVkIY5C8PKu--_UlA_phF5hvRy';
+    <div class="quick">
+        <button onclick="openScreen('inventory')">🎒 Багажник</button>
+        <button onclick="openScreen('tuning')">🔧 Тюнинг</button>
+        <button onclick="dailyReward()">🎁 Бонус</button>
+        <button onclick="openScreen('settings')">⚙️ Настройки</button>
+    </div>
 
-        // 2. Инициализация БЕЗ const, чтобы не было конфликта
-        // Мы просто присваиваем значение объекту, который уже создала библиотека
-        supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+</div>
+</div>
+</section>
 
-        console.log('✅ Клиент Supabase готов к работе!');
 
-        // 3. Сама функция (теперь браузер её точно увидит, если нет ошибок выше)
-        async function createAccount() {
-            const nameInput = document.getElementById('player-name');
-            const statusDiv = document.getElementById('status-message');
-            
-            if (!nameInput.value) {
-                statusDiv.textContent = '⚠️ Введи имя!';
-                statusDiv.style.color = '#f1c40f';
-                return;
-            }
+<!-- ================= GARAGE ================= -->
 
-            const playerName = nameInput.value.trim();
-            statusDiv.textContent = `💾 Поиск профиля для: ${playerName}...`;
-            statusDiv.style.color = '#fff';
+<section id="garage" class="screen">
+<button class="back" onclick="openScreen('menu')">← Назад</button>
 
-            try {
-                const { data, error } = await supabase
-                    .from('players')
-                    .select('*')
-                    .eq('name', playerName);
+<div class="panel">
+<div class="panel-inner">
 
-                if (error) {
-                    console.error('❌ Ошибка запроса:', error);
-                    statusDiv.textContent = '❌ Ошибка базы данных. Смотри консоль.';
-                    return;
-                }
+<h1 class="panel-title">🚗 Гараж</h1>
+<p class="panel-subtitle">Твоя коллекция автомобилей</p>
 
-                if (data && data.length > 0) {
-                    const player = data[0];
-                    statusDiv.textContent = `✅ Привет, ${player.name}! Баланс: ${player.balance}$`;
-                    statusDiv.style.color = '#2ed573';
-                    alert(`Гараж открыт! Баланс: ${player.balance}$`);
-                } else {
-                    statusDiv.textContent = '🆕 Создаём новый профиль...';
-                    
-                    const { data: newData, error: newError } = await supabase
-                        .from('players')
-                        .insert([{ name: playerName, balance: 50000 }]);
+<div class="car-preview">
+    <img id="garageCarImage" src="car.png"
+         onerror="this.style.display='none';document.getElementById('garagePlaceholder').style.display='block'">
+    <div id="garagePlaceholder" class="car-placeholder" style="display:none">
+        <div class="wheels">
+            <i class="wheel"></i><i class="wheel"></i>
+        </div>
+    </div>
+</div>
 
-                    if (newError) {
-                        console.error('❌ Ошибка создания:', newError);
-                        statusDiv.textContent = '❌ Не удалось создать профиль.';
-                        return;
-                    }
+<div class="stats">
+    <div class="stat">
+        <b id="statSpeed">72</b>
+        <span>СКОРОСТЬ</span>
+        <div class="progress"><i id="barSpeed" style="width:72%"></i></div>
+    </div>
+    <div class="stat">
+        <b id="statAccel">65</b>
+        <span>РАЗГОН</span>
+        <div class="progress"><i id="barAccel" style="width:65%"></i></div>
+    </div>
+    <div class="stat">
+        <b id="statHandling">70</b>
+        <span>УПРАВЛЕНИЕ</span>
+        <div class="progress"><i id="barHandling" style="width:70%"></i></div>
+    </div>
+    <div class="stat">
+        <b id="statNitro">55</b>
+        <span>НИТРО</span>
+        <div class="progress"><i id="barNitro" style="width:55%"></i></div>
+    </div>
+</div>
 
-                    statusDiv.textContent = `✅ Профиль создан! Баланс: 50000$`;
-                    statusDiv.style.color = '#2ed573';
-                    alert(`Гараж открыт! Ты получил стартовые 50000$.`);
-                }
-            } catch (err) {
-                console.error('💥 Критическая ошибка:', err);
-                statusDiv.textContent = '💥 Что-то пошло не так.';
-            }
+<button class="btn" onclick="openScreen('tuning')">🔧 Открыть тюнинг</button>
+
+</div>
+</div>
+</section>
+
+
+<!-- ================= MAP ================= -->
+
+<section id="map" class="screen">
+<button class="back" onclick="openScreen('menu')">← Назад</button>
+
+<div class="panel">
+<div class="panel-inner">
+
+<h1 class="panel-title">🌍 Карта</h1>
+<p class="panel-subtitle">Выбери место для гонки</p>
+
+<div class="map">
+
+<div class="location">
+<h3>🏙️ Неоновый город</h3>
+<p>Ночь • Асфальт</p>
+<button class="btn" onclick="selectTrack('city')">ГОНКА</button>
+</div>
+
+<div class="location">
+<h3>🏜️ Пустыня</h3>
+<p>День • Песок</p>
+<button class="btn" onclick="selectTrack('desert')">ГОНКА</button>
+</div>
+
+<div class="location">
+<h3>🌲 Лес</h3>
+<p>Туман • Серпантин</p>
+<button class="btn" onclick="selectTrack('forest')">ГОНКА</button>
+</div>
+
+<div class="location">
+<h3>🏔️ Горы</h3>
+<p>Снег • Опасные повороты</p>
+<button class="btn" onclick="selectTrack('mountain')">ГОНКА</button>
+</div>
+
+<div class="location">
+<h3>🏭 Индустриальная зона</h3>
+<p>Ночь • Дождь</p>
+<button class="btn" onclick="selectTrack('industrial')">ГОНКА</button>
+</div>
+
+</div>
+
+</div>
+</div>
+</section>
+
+
+<!-- ================= TOURNAMENT ================= -->
+
+<section id="tournament" class="screen">
+<button class="back" onclick="openScreen('menu')">← Назад</button>
+
+<div class="panel">
+<div class="panel-inner">
+
+<h1 class="panel-title">🏆 Турнир</h1>
+<p class="panel-subtitle">Стань чемпионом сезона</p>
+
+<div class="card">
+    <h2>🏆 Городская лига</h2>
+    <p>5 этапов • 8 соперников</p>
+
+    <div class="stats">
+        <div class="stat"><b id="tPoints">0</b><span>ОЧКИ</span></div>
+        <div class="stat"><b>5</b><span>ЭТАПОВ</span></div>
+        <div class="stat"><b>8</b><span>ГОНЩИКОВ</span></div>
+        <div class="stat"><b>50000</b><span>ПРИЗ</span></div>
+    </div>
+
+    <button class="btn gold" onclick="startTournament()">НАЧАТЬ ЭТАП</button>
+</div>
+
+<h2>Таблица</h2>
+
+<div class="grid">
+<div class="card"><h3>🥇 Ты</h3><p id="playerTournamentPoints">0 очков</p></div>
+<div class="card"><h3>🥈 Shadow</h3><p>34 очка</p></div>
+<div class="card"><h3>🥉 Turbo</h3><p>29 очков</p></div>
+<div class="card"><h3>4. Blaze</h3><p>24 очка</p></div>
+</div>
+
+</div>
+</div>
+</section>
+
+
+<!-- ================= COLLECTION ================= -->
+
+<section id="collection" class="screen">
+<button class="back" onclick="openScreen('menu')">← Назад</button>
+
+<div class="panel">
+<div class="panel-inner">
+
+<h1 class="panel-title">🏆 Коллекция</h1>
+<p class="panel-subtitle">Собрано автомобилей: <span id="collectionCount">1</span>/12</p>
+
+<div id="collectionGrid" class="grid"></div>
+
+</div>
+</div>
+</section>
+
+
+<!-- ================= SHOP ================= -->
+
+<section id="shop" class="screen">
+<button class="back" onclick="openScreen('menu')">← Назад</button>
+
+<div class="panel">
+<div class="panel-inner">
+
+<h1 class="panel-title">🛒 Магазин</h1>
+<p class="panel-subtitle">Покупай автомобили и детали</p>
+
+<div class="grid">
+
+<div class="card">
+<div class="card-img"><img src="car2.png" onerror="this.style.display='none'"></div>
+<h3>Street Viper</h3>
+<p>Спортивный городской автомобиль</p>
+<div class="price">💰 35000</div>
+<button class="btn" onclick="buyCar(1)">КУПИТЬ</button>
+</div>
+
+<div class="card">
+<div class="card-img"><div class="car-placeholder"></div></div>
+<h3>Night Runner</h3>
+<p>Высокая скорость и мощный нитро</p>
+<div class="price">💰 70000</div>
+<button class="btn" onclick="buyCar(2)">КУПИТЬ</button>
+</div>
+
+<div class="card">
+<div class="card-img"><div class="car-placeholder"></div></div>
+<h3>Mountain X</h3>
+<p>Создан для горных трасс</p>
+<div class="price">💎 120</div>
+<button class="btn gold" onclick="buyCarGold(3)">КУПИТЬ</button>
+</div>
+
+</div>
+
+</div>
+</div>
+</section>
+
+
+<!-- ================= INVENTORY ================= -->
+
+<section id="inventory" class="screen">
+<button class="back" onclick="openScreen('menu')">← Назад</button>
+
+<div class="panel">
+<div class="panel-inner">
+
+<h1 class="panel-title">🎒 Багажник</h1>
+<p class="panel-subtitle">Твой склад предметов</p>
+
+<div class="stats">
+<div class="stat"><b id="inventoryUsed">0</b><span>ЗАНЯТО</span></div>
+<div class="stat"><b>30</b><span>ВМЕСТИМОСТЬ</span></div>
+</div>
+
+<div id="inventoryGrid" class="grid"></div>
+
+</div>
+</div>
+</section>
+
+
+<!-- ================= TUNING ================= -->
+
+<section id="tuning" class="screen">
+<button class="back" onclick="openScreen('garage')">← Назад</button>
+
+<div class="panel">
+<div class="panel-inner">
+
+<h1 class="panel-title">🔧 Тюнинг</h1>
+<p class="panel-subtitle">Улучшай характеристики автомобиля</p>
+
+<div class="grid">
+
+<div class="card">
+<h3>🏎️ Двигатель</h3>
+<p>Увеличивает максимальную скорость</p>
+<div class="price">Уровень <span id="engineLevel">1</span>/10</div>
+<button class="btn" onclick="upgrade('engine')">УЛУЧШИТЬ • 💰 <span id="engineCost">5000</span></button>
+</div>
+
+<div class="card">
+<h3>⚙️ Коробка</h3>
+<p>Ускоряет разгон</p>
+<div class="price">Уровень <span id="gearLevel">1</span>/10</div>
+<button class="btn" onclick="upgrade('gear')">УЛУЧШИТЬ • 💰 <span id="gearCost">5000</span></button>
+</div>
+
+<div class="card">
+<h3>🛞 Шины</h3>
+<p>Улучшает управление</p>
+<div class="price">Уровень <span id="tireLevel">1</span>/10</div>
+<button class="btn" onclick="upgrade('tires')">УЛУЧШИТЬ • 💰 <span id="tireCost">5000</span></button>
+</div>
+
+<div class="card">
+<h3>🔥 Нитро</h3>
+<p>Увеличивает мощность ускорения</p>
+<div class="price">Уровень <span id="nitroLevel">1</span>/10</div>
+<button class="btn" onclick="upgrade('nitro')">УЛУЧШИТЬ • 💰 <span id="nitroCost">5000</span></button>
+</div>
+
+</div>
+
+</div>
+</div>
+</section>
+
+
+<!-- ================= SETTINGS ================= -->
+
+<section id="settings" class="screen">
+<button class="back" onclick="openScreen('menu')">← Назад</button>
+
+<div class="panel">
+<div class="panel-inner">
+
+<h1 class="panel-title">⚙️ Настройки</h1>
+
+<div class="grid">
+
+<div class="card">
+<h3>🎮 Управление</h3>
+<p>Клавиатура: ← → или A/D</p>
+<p>Нитро: Space</p>
+</div>
+
+<div class="card">
+<h3>💾 Сохранение</h3>
+<p>Прогресс хранится в браузере.</p>
+<button class="btn" onclick="saveGame();toast('Игра сохранена')">СОХРАНИТЬ</button>
+</div>
+
+<div class="card">
+<h3>🗑️ Сброс</h3>
+<p>Удалить весь прогресс Pocket Racer.</p>
+<button class="btn secondary" onclick="resetGame()">СБРОСИТЬ</button>
+</div>
+
+</div>
+
+</div>
+</div>
+</section>
+
+
+<!-- ================= RACE ================= -->
+
+<section id="race" class="screen">
+
+<canvas id="raceCanvas"></canvas>
+
+<div class="race-ui">
+
+<div class="race-top">
+<div class="race-box">
+🏁 <span id="racePosition">1</span>/5
+</div>
+
+<div class="race-box">
+🏆 <span id="raceDistance">0</span>%
+</div>
+
+<div class="race-box">
+💰 <span id="raceReward">0</span>
+</div>
+</div>
+
+<div id="countdown">3</div>
+
+<div class="controls">
+
+<div class="control-group">
+<button class="control" id="leftBtn">◀</button>
+<button class="control" id="rightBtn">▶</button>
+</div>
+
+<button class="control nitro" id="nitroBtn">NITRO</button>
+
+</div>
+
+</div>
+
+<div id="raceResult">
+<div class="result-box">
+
+<h2 id="resultTitle">ФИНИШ!</h2>
+<p id="resultText">Ты занял 1 место.</p>
+
+<div class="stats">
+<div class="stat"><b id="resultMoney">0</b><span>ДЕНЬГИ</span></div>
+<div class="stat"><b id="resultXP">0</b><span>ОПЫТ</span></div>
+</div>
+
+<button class="btn" onclick="finishRace()">ЗАБРАТЬ НАГРАДУ</button>
+
+</div>
+</div>
+
+</section>
+
+
+<div id="toast"></div>
+
+</div>
+
+
+<script>
+
+/* ============================================================
+   POCKET RACER
+   Полностью локальная версия.
+   Никаких аккаунтов.
+   Никакого Supabase.
+   Никакой базы данных.
+   ============================================================ */
+
+const SAVE_KEY = "pocket_racer_save_v1";
+
+
+/* ================= DATA ================= */
+
+const defaultGame = {
+
+    money:50000,
+    gold:250,
+
+    xp:0,
+    level:1,
+
+    selectedCar:0,
+
+    ownedCars:[0],
+
+    engine:1,
+    gear:1,
+    tires:1,
+    nitro:1,
+
+    tournamentPoints:0,
+    tournamentStage:0,
+
+    inventory:[
+        {name:"Маленький ремонт",icon:"🔧",amount:2},
+        {name:"Нитро",icon:"🔥",amount:3}
+    ],
+
+    selectedTrack:"city",
+
+    dailyClaimed:false
+
+};
+
+let game = loadGame();
+
+
+const cars = [
+
+{
+    name:"Pocket GT",
+    speed:72,
+    accel:65,
+    handling:70,
+    nitro:55,
+    price:0,
+    image:"car.png"
+},
+
+{
+    name:"Street Viper",
+    speed:80,
+    accel:74,
+    handling:68,
+    nitro:70,
+    price:35000,
+    image:"car2.png"
+},
+
+{
+    name:"Night Runner",
+    speed:91,
+    accel:84,
+    handling:72,
+    nitro:88,
+    price:70000,
+    image:null
+},
+
+{
+    name:"Mountain X",
+    speed:78,
+    accel:72,
+    handling:95,
+    nitro:75,
+    price:120,
+    gold:true,
+    image:null
+},
+
+{
+    name:"Thunder",
+    speed:94,
+    accel:90,
+    handling:82,
+    nitro:92,
+    price:150000,
+    image:null
+},
+
+{
+    name:"Phantom",
+    speed:98,
+    accel:93,
+    handling:88,
+    nitro:100,
+    price:300,
+    gold:true,
+    image:null
+},
+
+{
+    name:"Rally Beast",
+    speed:85,
+    accel:88,
+    handling:100,
+    nitro:72,
+    price:180000,
+    image:null
+},
+
+{
+    name:"Cyber X",
+    speed:100,
+    accel:97,
+    handling:94,
+    nitro:100,
+    price:500,
+    gold:true,
+    image:null
+},
+
+{
+    name:"Desert King",
+    speed:88,
+    accel:82,
+    handling:92,
+    nitro:80,
+    price:210000,
+    image:null
+},
+
+{
+    name:"Ice Wolf",
+    speed:90,
+    accel:89,
+    handling:96,
+    nitro:85,
+    price:350000,
+    image:null
+},
+
+{
+    name:"Blackout",
+    speed:99,
+    accel:96,
+    handling:90,
+    nitro:98,
+    price:750,
+    gold:true,
+    image:null
+},
+
+{
+    name:"Legend",
+    speed:100,
+    accel:100,
+    handling:100,
+    nitro:100,
+    price:1000,
+    gold:true,
+    image:null
+}
+
+];
+
+
+/* ================= SAVE ================= */
+
+function loadGame(){
+
+    try{
+
+        const saved = localStorage.getItem(SAVE_KEY);
+
+        if(saved){
+
+            const parsed = JSON.parse(saved);
+
+            return Object.assign(
+                {},
+                defaultGame,
+                parsed
+            );
+
         }
-    </script>
+
+    }catch(e){
+
+        console.error(e);
+
+    }
+
+    return JSON.parse(JSON.stringify(defaultGame));
+}
+
+
+function saveGame(){
+
+    localStorage.setItem(
+        SAVE_KEY,
+        JSON.stringify(game)
+    );
+
+    updateUI();
+}
+
+
+function resetGame(){
+
+    if(!confirm("Удалить весь прогресс Pocket Racer?")) return;
+
+    localStorage.removeItem(SAVE_KEY);
+
+    game = JSON.parse(
+        JSON.stringify(defaultGame)
+    );
+
+    updateUI();
+
+    toast("Прогресс сброшен");
+
+}
+
+
+/* ================= NAVIGATION ================= */
+
+function openScreen(id){
+
+    document.querySelectorAll(".screen")
+        .forEach(s=>s.classList.remove("active"));
+
+    const screen=document.getElementById(id);
+
+    if(screen){
+
+        screen.classList.add("active");
+
+    }
+
+    if(id==="garage") updateGarage();
+    if(id==="collection") renderCollection();
+    if(id==="inventory") renderInventory();
+    if(id==="tuning") updateTuning();
+    if(id==="tournament") updateTournament();
+
+}
+
+
+function toast(text){
+
+    const t=document.getElementById("toast");
+
+    t.textContent=text;
+
+    t.classList.add("show");
+
+    clearTimeout(window.toastTimer);
+
+    window.toastTimer=setTimeout(
+        ()=>t.classList.remove("show"),
+        2200
+    );
+
+}
+
+
+/* ================= UI ================= */
+
+function updateUI(){
+
+    document.getElementById("menuMoney").textContent =
+        game.money.toLocaleString();
+
+    document.getElementById("menuGold").textContent =
+        game.gold.toLocaleString();
+
+    updateGarage();
+    updateTuning();
+    updateTournament();
+
+}
+
+
+function updateGarage(){
+
+    const car=cars[game.selectedCar];
+
+    const img=document.getElementById("garageCarImage");
+    const placeholder=document.getElementById("garagePlaceholder");
+
+    img.src=car.image || "";
+
+    if(car.image){
+
+        img.style.display="block";
+        placeholder.style.display="none";
+
+    }else{
+
+        img.style.display="none";
+        placeholder.style.display="block";
+
+    }
+
+    const speed=Math.min(
+        100,
+        car.speed + (game.engine-1)*3
+    );
+
+    const accel=Math.min(
+        100,
+        car.accel + (game.gear-1)*3
+    );
+
+    const handling=Math.min(
+        100,
+        car.handling + (game.tires-1)*3
+    );
+
+    const nitro=Math.min(
+        100,
+        car.nitro + (game.nitro-1)*4
+    );
+
+    document.getElementById("statSpeed").textContent=speed;
+    document.getElementById("statAccel").textContent=accel;
+    document.getElementById("statHandling").textContent=handling;
+    document.getElementById("statNitro").textContent=nitro;
+
+    document.getElementById("barSpeed").style.width=speed+"%";
+    document.getElementById("barAccel").style.width=accel+"%";
+    document.getElementById("barHandling").style.width=handling+"%";
+    document.getElementById("barNitro").style.width=nitro+"%";
+
+}
+
+
+function updateTuning(){
+
+    document.getElementById("engineLevel").textContent=game.engine;
+    document.getElementById("gearLevel").textContent=game.gear;
+    document.getElementById("tireLevel").textContent=game.tires;
+    document.getElementById("nitroLevel").textContent=game.nitro;
+
+    document.getElementById("engineCost").textContent=
+        upgradeCost(game.engine).toLocaleString();
+
+    document.getElementById("gearCost").textContent=
+        upgradeCost(game.gear).toLocaleString();
+
+    document.getElementById("tireCost").textContent=
+        upgradeCost(game.tires).toLocaleString();
+
+    document.getElementById("nitroCost").textContent=
+        upgradeCost(game.nitro).toLocaleString();
+
+}
+
+
+function updateTournament(){
+
+    document.getElementById("tPoints").textContent=
+        game.tournamentPoints;
+
+    document.getElementById("playerTournamentPoints").textContent=
+        game.tournamentPoints+" очков";
+
+}
+
+
+/* ================= TUNING ================= */
+
+function upgradeCost(level){
+
+    return Math.floor(
+        5000 * Math.pow(1.55,level-1)
+    );
+
+}
+
+
+function upgrade(type){
+
+    if(game[type]>=10){
+
+        toast("Максимальный уровень");
+
+        return;
+
+    }
+
+    const cost=upgradeCost(game[type]);
+
+    if(game.money<cost){
+
+        toast("Не хватает денег");
+
+        return;
+
+    }
+
+    game.money-=cost;
+
+    game[type]++;
+
+    saveGame();
+
+    toast("Улучшение установлено");
+
+}
+
+
+/* ================= COLLECTION ================= */
+
+function renderCollection(){
+
+    const grid=document.getElementById("collectionGrid");
+
+    grid.innerHTML="";
+
+    cars.forEach((car,index)=>{
+
+        const owned=game.ownedCars.includes(index);
+
+        const card=document.createElement("div");
+
+        card.className="card "+(owned?"":"locked");
+
+        let image="";
+
+        if(car.image){
+
+            image=
+            `<img src="${car.image}"
+            onerror="this.style.display='none'">`;
+
+        }else{
+
+            image=
+            `<div class="car-placeholder"
+            style="transform:scale(.65)">
+            <div class="wheels">
+            <i class="wheel"></i>
+            <i class="wheel"></i>
+            </div>
+            </div>`;
+
+        }
+
+        card.innerHTML=`
+
+        <div class="card-img">
+            ${image}
+        </div>
+
+        <h3>${owned?"":"🔒 "}${car.name}</h3>
+
+        <p>
+        Скорость ${car.speed} •
+        Разгон ${car.accel}
+        </p>
+
+        <button
+        class="btn ${owned&&game.selectedCar===index?"green":""}"
+        onclick="${owned?`selectCar(${index})`:`buyCar(${index})`}">
+
+        ${owned?
+            (game.selectedCar===index?"ВЫБРАНО":"ВЫБРАТЬ"):
+            (car.gold?`💎 ${car.price}`:`💰 ${car.price.toLocaleString()}`)
+        }
+
+        </button>
+
+        `;
+
+        grid.appendChild(card);
+
+    });
+
+    document.getElementById("collectionCount").textContent=
+        game.ownedCars.length;
+
+}
+
+
+/* ================= CARS ================= */
+
+function selectCar(index){
+
+    if(!game.ownedCars.includes(index)) return;
+
+    game.selectedCar=index;
+
+    saveGame();
+
+    toast(cars[index].name+" выбран");
+
+    renderCollection();
+
+}
+
+
+function buyCar(index){
+
+    const car=cars[index];
+
+    if(game.ownedCars.includes(index)){
+
+        selectCar(index);
+
+        return;
+
+    }
+
+    if(car.gold){
+
+        buyCarGold(index);
+
+        return;
+
+    }
+
+    if(game.money<car.price){
+
+        toast("Не хватает денег");
+
+        return;
+
+    }
+
+    game.money-=car.price;
+
+    game.ownedCars.push(index);
+
+    game.selectedCar=index;
+
+    saveGame();
+
+    toast(car.name+" куплен!");
+
+    renderCollection();
+
+}
+
+
+function buyCarGold(index){
+
+    const car=cars[index];
+
+    if(game.ownedCars.includes(index)){
+
+        selectCar(index);
+
+        return;
+
+    }
+
+    if(game.gold<car.price){
+
+        toast("Не хватает золота");
+
+        return;
+
+    }
+
+    game.gold-=car.price;
+
+    game.ownedCars.push(index);
+
+    game.selectedCar=index;
+
+    saveGame();
+
+    toast(car.name+" куплен за золото!");
+
+}
+
+
+/* ================= INVENTORY ================= */
+
+function renderInventory(){
+
+    const grid=document.getElementById("inventoryGrid");
+
+    grid.innerHTML="";
+
+    let used=0;
+
+    game.inventory.forEach(item=>{
+
+        used+=item.amount;
+
+        const card=document.createElement("div");
+
+        card.className="card";
+
+        card.innerHTML=`
+
+        <div style="font-size:55px">${item.icon}</div>
+
+        <h3>${item.name}</h3>
+
+        <p>Количество: ${item.amount}</p>
+
+        <button class="btn secondary"
+        onclick="useItem('${item.name}')">
+        ИСПОЛЬЗОВАТЬ
+        </button>
+
+        `;
+
+        grid.appendChild(card);
+
+    });
+
+    if(game.inventory.length===0){
+
+        grid.innerHTML=
+        `<div class="card">
+        <h3>Багажник пуст</h3>
+        <p>Покупай предметы в магазине.</p>
+        </div>`;
+
+    }
+
+    document.getElementById("inventoryUsed").textContent=used;
+
+}
+
+
+function useItem(name){
+
+    const item=game.inventory.find(i=>i.name===name);
+
+    if(!item || item.amount<=0){
+
+        toast("Предмет закончился");
+
+        return;
+
+    }
+
+    item.amount--;
+
+    saveGame();
+
+    renderInventory();
+
+    toast("Использовано: "+name);
+
+}
+
+
+/* ================= BONUS ================= */
+
+function dailyReward(){
+
+    if(game.dailyClaimed){
+
+        toast("Бонус уже получен");
+
+        return;
+
+    }
+
+    game.money+=10000;
+    game.gold+=25;
+
+    game.dailyClaimed=true;
+
+    saveGame();
+
+    toast("🎁 +10000 денег и +25 золота!");
+
+}
+
+
+/* ================= TRACK ================= */
+
+function selectTrack(track){
+
+    game.selectedTrack=track;
+
+    saveGame();
+
+    openRace();
+
+}
+
+
+/* ================= TOURNAMENT ================= */
+
+function startTournament(){
+
+    if(game.tournamentStage>=5){
+
+        game.tournamentStage=0;
+        game.tournamentPoints=0;
+
+    }
+
+    game.selectedTrack=[
+        "city",
+        "desert",
+        "forest",
+        "mountain",
+        "industrial"
+    ][game.tournamentStage];
+
+    openRace();
+
+}
+
+
+function finishTournamentStage(position){
+
+    const points=[
+        25,
+        18,
+        15,
+        12,
+        10
+    ][Math.min(position-1,4)] || 5;
+
+    game.tournamentPoints+=points;
+
+    game.tournamentStage++;
+
+    if(game.tournamentStage>=5){
+
+        const bonus=50000+game.tournamentPoints*500;
+
+        game.money+=bonus;
+
+        game.tournamentStage=0;
+
+        toast("🏆 Турнир завершён! +"+bonus+"$");
+
+    }
+
+    saveGame();
+
+}
+
+
+/* ============================================================
+   RACE ENGINE
+   ============================================================ */
+
+const canvas=document.getElementById("raceCanvas");
+const ctx=canvas.getContext("2d");
+
+let race=null;
+
+const keys={
+    left:false,
+    right:false,
+    nitro:false
+};
+
+
+function resizeCanvas(){
+
+    canvas.width=window.innerWidth*
+        Math.min(window.devicePixelRatio||1,2);
+
+    canvas.height=window.innerHeight*
+        Math.min(window.devicePixelRatio||1,2);
+
+    canvas.style.width=window.innerWidth+"px";
+    canvas.style.height=window.innerHeight+"px";
+
+}
+
+window.addEventListener("resize",resizeCanvas);
+
+resizeCanvas();
+
+
+window.addEventListener("keydown",e=>{
+
+    if(e.key==="ArrowLeft"||e.key.toLowerCase()==="a")
+        keys.left=true;
+
+    if(e.key==="ArrowRight"||e.key.toLowerCase()==="d")
+        keys.right=true;
+
+    if(e.code==="Space")
+        keys.nitro=true;
+
+});
+
+
+window.addEventListener("keyup",e=>{
+
+    if(e.key==="ArrowLeft"||e.key.toLowerCase()==="a")
+        keys.left=false;
+
+    if(e.key==="ArrowRight"||e.key.toLowerCase()==="d")
+        keys.right=false;
+
+    if(e.code==="Space")
+        keys.nitro=false;
+
+});
+
+
+function bindControl(id,key){
+
+    const el=document.getElementById(id);
+
+    el.addEventListener("pointerdown",e=>{
+        e.preventDefault();
+        keys[key]=true;
+    });
+
+    el.addEventListener("pointerup",e=>{
+        e.preventDefault();
+        keys[key]=false;
+    });
+
+    el.addEventListener("pointercancel",()=>{
+        keys[key]=false;
+    });
+
+    el.addEventListener("pointerleave",()=>{
+        keys[key]=false;
+    });
+
+}
+
+bindControl("leftBtn","left");
+bindControl("rightBtn","right");
+bindControl("nitroBtn","nitro");
+
+
+/* ================= OPEN RACE ================= */
+
+function openRace(){
+
+    openScreen("race");
+
+    startRace();
+
+}
+
+
+/* ================= RACE START ================= */
+
+function startRace(){
+
+    const car=cars[game.selectedCar];
+
+    race={
+
+        running:false,
+
+        finished:false,
+
+        countdown:3,
+
+        distance:0,
+
+        speed:0,
+
+        maxSpeed:
+            4.2+
+            car.speed/100*3,
+
+        acceleration:
+            .025+
+            car.accel/100*.025,
+
+        handling:
+            .045+
+            car.handling/100*.045,
+
+        nitroPower:
+            .10+
+            car.nitro/100*.14,
+
+        nitro:100,
+
+        playerX:0,
+
+        roadOffset:0,
+
+        opponents:[],
+
+        lastTime:performance.now(),
+
+        reward:0,
+
+        xp:0,
+
+        position:1
+
+    };
+
+
+    for(let i=0;i<4;i++){
+
+        race.opponents.push({
+
+            x:(i%2===0?-0.45:0.45),
+            distance:-Math.random()*10,
+            speed:
+                race.maxSpeed*
+                (.72+Math.random()*.20)
+
+        });
+
+    }
+
+
+    document.getElementById("raceResult").style.display="none";
+
+    document.getElementById("countdown").style.display="block";
+
+    countdownRace();
+
+    requestAnimationFrame(raceLoop);
+
+}
+
+
+/* ================= COUNTDOWN ================= */
+
+function countdownRace(){
+
+    if(!race) return;
+
+    const el=document.getElementById("countdown");
+
+    el.textContent=race.countdown;
+
+    if(race.countdown<=0){
+
+        el.textContent="GO!";
+
+        race.running=true;
+
+        setTimeout(()=>{
+            if(el)el.style.display="none";
+        },600);
+
+        return;
+
+    }
+
+    race.countdown--;
+
+    setTimeout(countdownRace,800);
+
+}
+
+
+/* ================= TRACK ================= */
+
+function trackStyle(){
+
+    switch(game.selectedTrack){
+
+        case"desert":
+            return{
+                sky:"#d29b61",
+                ground:"#8d6b45",
+                road:"#4d4b48"
+            };
+
+        case"forest":
+            return{
+                sky:"#6e8790",
+                ground:"#28442d",
+                road:"#34383a"
+            };
+
+        case"mountain":
+            return{
+                sky:"#a8c5d6",
+                ground:"#cfd6d9",
+                road:"#55595b"
+            };
+
+        case"industrial":
+            return{
+                sky:"#202632",
+                ground:"#171b20",
+                road:"#303237"
+            };
+
+        default:
+            return{
+                sky:"#152b3e",
+                ground:"#15231b",
+                road:"#303238"
+            };
+
+    }
+
+}
+
+
+/* ================= DRAW ================= */
+
+function drawRace(){
+
+    const w=canvas.width;
+    const h=canvas.height;
+
+    const style=trackStyle();
+
+    ctx.clearRect(0,0,w,h);
+
+    /* sky */
+
+    ctx.fillStyle=style.sky;
+
+    ctx.fillRect(0,0,w,h*.45);
+
+    /* ground */
+
+    ctx.fillStyle=style.ground;
+
+    ctx.fillRect(0,h*.45,w,h*.55);
+
+
+    /* road perspective */
+
+    const horizon=h*.42;
+
+    const bottom=h;
+
+    const roadTop=w*.10;
+    const roadBottom=w*.95;
+
+    ctx.fillStyle=style.road;
+
+    ctx.beginPath();
+
+    ctx.moveTo(w/2-roadTop,horizon);
+    ctx.lineTo(w/2+roadTop,horizon);
+    ctx.lineTo(w/2+roadBottom,bottom);
+    ctx.lineTo(w/2-roadBottom,bottom);
+    ctx.closePath();
+
+    ctx.fill();
+
+
+    /* road edges */
+
+    ctx.strokeStyle="#ddd";
+    ctx.lineWidth=4;
+
+    ctx.beginPath();
+
+    ctx.moveTo(w/2-roadTop,horizon);
+    ctx.lineTo(w/2-roadBottom,bottom);
+
+    ctx.moveTo(w/2+roadTop,horizon);
+    ctx.lineTo(w/2+roadBottom,bottom);
+
+    ctx.stroke();
+
+
+    /* center markings */
+
+    const stripeH=70;
+    const gap=55;
+
+    const offset=
+        (race.roadOffset%(stripeH+gap));
+
+    for(
+        let y=horizon-offset;
+        y<bottom;
+        y+=stripeH+gap
+    ){
+
+        const progress=
+            (y-horizon)/(bottom-horizon);
+
+        const width=
+            4+progress*12;
+
+        const yy=y;
+
+        ctx.fillStyle="#eee";
+
+        ctx.fillRect(
+            w/2-width/2,
+            yy,
+            width,
+            stripeH*progress+.1
+        );
+
+    }
+
+
+    /* environmental lights */
+
+    if(game.selectedTrack==="city"){
+
+        for(let i=0;i<10;i++){
+
+            const side=i%2===0?-1:1;
+
+            const y=
+                horizon+
+                ((i*170+race.roadOffset*2)%700);
+
+            const scale=
+                Math.max(.2,
+                (y-horizon)/500);
+
+            ctx.fillStyle=
+                i%2===0?
+                "#ff3344":
+                "#28a9ff";
+
+            ctx.fillRect(
+                w/2+
+                side*(roadTop+30+scale*roadBottom*.55),
+                y,
+                8+scale*12,
+                35+scale*20
+            );
+
+        }
+
+    }
+
+
+    /* opponents */
+
+    race.opponents.forEach((op,i)=>{
+
+        const relative=
+            Math.max(0,
+            Math.min(1,
+            (op.distance-race.distance+15)/25));
+
+        const y=
+            horizon+
+            relative*(bottom-horizon);
+
+        const x=
+            w/2+
+            op.x*
+            (roadTop+
+            relative*(roadBottom-roadTop));
+
+        drawOpponent(
+            x,
+            y,
+            45+relative*80,
+            i
+        );
+
+    });
+
+
+    /* player */
+
+    const playerX=
+        w/2+
+        race.playerX*roadBottom;
+
+    drawPlayer(
+        playerX,
+        h*.80,
+        100
+    );
+
+
+    /* speed / nitro */
+
+    drawNitroBar();
+
+}
+
+
+function drawOpponent(x,y,size,index){
+
+    ctx.save();
+
+    ctx.translate(x,y);
+
+    ctx.fillStyle=
+        ["#e33","#39f","#f5c400","#9b59b6"][index];
+
+    ctx.beginPath();
+
+    ctx.roundRect(
+        -size*.42,
+        -size*.65,
+        size*.84,
+        size*1.3,
+        size*.15
+    );
+
+    ctx.fill();
+
+    ctx.fillStyle="#111";
+
+    ctx.fillRect(
+        -size*.28,
+        -size*.35,
+        size*.56,
+        size*.22
+    );
+
+    ctx.fillStyle="#050505";
+
+    ctx.fillRect(
+        -size*.52,
+        -size*.35,
+        size*.13,
+        size*.35
+    );
+
+    ctx.fillRect(
+        size*.39,
+        -size*.35,
+        size*.13,
+        size*.35
+    );
+
+    ctx.restore();
+
+}
+
+
+const playerImage=new Image();
+
+playerImage.src="car.png";
+
+let playerImageLoaded=false;
+
+playerImage.onload=()=>{
+    playerImageLoaded=true;
+};
+
+
+function drawPlayer(x,y,size){
+
+    ctx.save();
+
+    ctx.translate(x,y);
+
+    if(playerImageLoaded){
+
+        ctx.drawImage(
+            playerImage,
+            -size*.5,
+            -size*.8,
+            size,
+            size*1.6
+        );
+
+    }else{
+
+        ctx.fillStyle="#ed3340";
+
+        ctx.beginPath();
+
+        ctx.roundRect(
+            -size*.45,
+            -size*.65,
+            size*.9,
+            size*1.3,
+            15
+        );
+
+        ctx.fill();
+
+        ctx.fillStyle="#0b1118";
+
+        ctx.fillRect(
+            -size*.28,
+            -size*.35,
+            size*.56,
+            size*.25
+        );
+
+        ctx.fillStyle="#000";
+
+        ctx.fillRect(
+            -size*.55,
+            -size*.4,
+            size*.15,
+            size*.4
+        );
+
+        ctx.fillRect(
+            size*.4,
+            -size*.4,
+            size*.15,
+            size*.4
+        );
+
+    }
+
+    if(keys.nitro && race.nitro>0){
+
+        ctx.fillStyle="#4deaff";
+
+        ctx.beginPath();
+
+        ctx.moveTo(-size*.2,size*.65);
+        ctx.lineTo(0,size*1.1+Math.random()*20);
+        ctx.lineTo(size*.2,size*.65);
+
+        ctx.fill();
+
+    }
+
+    ctx.restore();
+
+}
+
+
+function drawNitroBar(){
+
+    const w=canvas.width;
+
+    const barW=Math.min(
+        300,
+        w*.35
+    );
+
+    const x=w/2-barW/2;
+    const y=canvas.height-35;
+
+    ctx.fillStyle="rgba(0,0,0,.5)";
+
+    ctx.fillRect(
+        x,
+        y,
+        barW,
+        12
+    );
+
+    ctx.fillStyle="#22d9ff";
+
+    ctx.fillRect(
+        x,
+        y,
+        barW*(race.nitro/100),
+        12
+    );
+
+}
+
+
+/* ================= RACE LOOP ================= */
+
+function raceLoop(time){
+
+    if(!race) return;
+
+    const dt=Math.min(
+        32,
+        time-race.lastTime
+    );
+
+    race.lastTime=time;
+
+    if(race.running && !race.finished){
+
+        updateRace(dt/16.67);
+
+    }
+
+    drawRace();
+
+    updateRaceUI();
+
+    if(
+        !race.finished &&
+        document.getElementById("race").classList.contains("active")
+    ){
+
+        requestAnimationFrame(raceLoop);
+
+    }
+
+}
+
+
+/* ================= UPDATE RACE ================= */
+
+function updateRace(delta){
+
+    const car=cars[game.selectedCar];
+
+    /* acceleration */
+
+    race.speed += race.acceleration*delta;
+
+    /* nitro */
+
+    if(keys.nitro && race.nitro>0){
+
+        race.speed+=race.nitroPower*delta;
+
+        race.nitro-=0.7*delta;
+
+    }else{
+
+        race.nitro+=0.18*delta;
+
+    }
+
+    race.nitro=Math.max(
+        0,
+        Math.min(100,race.nitro)
+    );
+
+
+    /* steering */
+
+    if(keys.left){
+
+        race.playerX-=race.handling*.35*delta;
+
+    }
+
+    if(keys.right){
+
+        race.playerX+=race.handling*.35*delta;
+
+    }
+
+    race.playerX=Math.max(
+        -.86,
+        Math.min(.86,race.playerX)
+    );
+
+
+    race.speed=Math.min(
+        race.maxSpeed*(keys.nitro?1.65:1),
+        race.speed
+    );
+
+
+    race.distance+=
+        race.speed*.06*delta;
+
+    race.roadOffset+=
+        race.speed*8*delta;
+
+
+    /* opponents */
+
+    race.opponents.forEach(op=>{
+
+        op.distance+=
+            op.speed*.06*delta;
+
+    });
+
+
+    /* determine position */
+
+    let ahead=0;
+
+    race.opponents.forEach(op=>{
+
+        if(op.distance>race.distance)
+            ahead++;
+
+    });
+
+    race.position=ahead+1;
+
+
+    /* finish */
+
+    if(race.distance>=100){
+
+        endRace();
+
+    }
+
+}
+
+
+/* ================= COLLISION ================= */
+
+function collisionCheck(){
+
+    race.opponents.forEach(op=>{
+
+        if(
+            Math.abs(op.distance-race.distance)<1.5 &&
+            Math.abs(op.x-race.playerX)<.18
+        ){
+
+            race.speed*=.45;
+
+            race.distance-=.4;
+
+            toast("💥 Столкновение!");
+
+        }
+
+    });
+
+}
+
+
+/* ================= RACE UI ================= */
+
+function updateRaceUI(){
+
+    if(!race) return;
+
+    document.getElementById("racePosition").textContent=
+        race.position;
+
+    document.getElementById("raceDistance").textContent=
+        Math.min(100,Math.floor(race.distance));
+
+    document.getElementById("raceReward").textContent=
+        Math.floor(
+            race.distance*12
+        );
+
+}
+
+
+/* ================= END ================= */
+
+function endRace(){
+
+    if(race.finished) return;
+
+    race.finished=true;
+
+    const position=race.position;
+
+    const rewards=[
+        15000,
+        10000,
+        7000,
+        4500,
+        2500
+    ];
+
+    const xpRewards=[
+        300,
+        220,
+        160,
+        120,
+        80
+    ];
+
+    const money=
+        rewards[Math.min(position-1,4)];
+
+    const xp=
+        xpRewards[Math.min(position-1,4)];
+
+    race.reward=money;
+    race.xp=xp;
+
+    document.getElementById("resultTitle").textContent=
+        position===1?
+        "🏆 ПОБЕДА!":
+        "ФИНИШ!";
+
+    document.getElementById("resultText").textContent=
+        `Ты занял ${position} место из 5.`;
+
+    document.getElementById("resultMoney").textContent=
+        money.toLocaleString();
+
+    document.getElementById("resultXP").textContent=
+        xp;
+
+    document.getElementById("raceResult").style.display="flex";
+
+}
+
+
+function finishRace(){
+
+    if(!race) return;
+
+    game.money+=race.reward;
+
+    addXP(race.xp);
+
+    if(game.tournamentStage>0){
+
+        finishTournamentStage(
+            race.position
+        );
+
+    }
+
+    saveGame();
+
+    document.getElementById("raceResult").style.display="none";
+
+    race=null;
+
+    openScreen("menu");
+
+}
+
+
+/* ================= XP ================= */
+
+function addXP(amount){
+
+    game.xp+=amount;
+
+    const needed=
+        game.level*1000;
+
+    while(game.xp>=needed){
+
+        game.xp-=needed;
+
+        game.level++;
+
+        game.money+=5000;
+
+        toast(
+            "⭐ Новый уровень! "+game.level
+        );
+
+    }
+
+}
+
+
+/* ================= DAILY ================= */
+
+setInterval(()=>{
+
+    if(!game.dailyClaimed){
+
+        /* бонус доступен */
+
+    }
+
+},60000);
+
+
+/* ================= INITIAL ================= */
+
+updateUI();
+
+renderCollection();
+
+renderInventory();
+
+</script>
+
 </body>
 </html>
